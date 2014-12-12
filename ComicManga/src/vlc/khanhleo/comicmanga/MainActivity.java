@@ -1,36 +1,81 @@
 package vlc.khanhleo.comicmanga;
 
+import java.util.ArrayList;
+
 import vlc.khanhle.comicmanga.R;
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.os.Bundle;
+import vlc.khanhleo.comicmanga.adapter.TestAdapter;
+import vlc.khanhleo.comicmanga.adapter.VolAdapter;
+import vlc.khanhleo.comicmanga.object.VolItem;
 import android.view.View;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.app.Activity;
+import android.content.res.Configuration;
+import android.graphics.drawable.GradientDrawable.Orientation;
+import android.os.Bundle;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.GridView;
+import android.widget.Toast;
 
-@SuppressLint("NewApi")
-public class MainActivity extends Activity {
+public class MainActivity extends DrawerLayoutActivity {
 
-	private WebView mWebView;
+	private GridView mGvVol;
+	private ArrayList<VolItem> listItem;
+	private int[] mDrawableItem = new int[] { R.drawable.vol1, R.drawable.vol2,
+			R.drawable.vol3, R.drawable.vol4, R.drawable.vol5, R.drawable.vol6,
+			R.drawable.vol7, R.drawable.vol8, R.drawable.vol9,
+			R.drawable.vol10, R.drawable.vol11, R.drawable.vol12,
+			R.drawable.vol13, R.drawable.vol14, R.drawable.vol15,
+			R.drawable.vol16, R.drawable.vol17, R.drawable.vol18,
+			R.drawable.vol19, R.drawable.vol20, R.drawable.vol21,
+			R.drawable.vol22, R.drawable.vol23, R.drawable.vol24,
+			R.drawable.vol25, R.drawable.vol26, R.drawable.vol27,
+			R.drawable.vol28, R.drawable.vol29, R.drawable.vol30, R.drawable.vol31,
+			R.drawable.vol32, R.drawable.vol33, R.drawable.vol34 };
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-
-		mWebView = (WebView) findViewById(R.id.wv_content);
-		mWebView.setWebViewClient(new WebViewClient());
-
-		String url = "http://vechai.info/shin-cau-be-but-chi-vol-4/";
+//		setContentView(R.layout.activity_main);
+		init();
+		mGvVol = (GridView) findViewById(R.id.gvVol);
+		if(getResources().getConfiguration().orientation== Configuration.ORIENTATION_LANDSCAPE){
+			mGvVol.setNumColumns(5);
+		}else{
+			mGvVol.setNumColumns(3);
+		}
 		
-		// url =
-		// "http://game.24h.com.vn/game-hay-nhat/pikachu-phien-ban-moi-c131g597b15.html";
-		// url = "file:///android_asset/game/testgame.html";
-		mWebView.getSettings().setJavaScriptEnabled(true);
-		mWebView.getSettings().setLoadsImagesAutomatically(true);
-		mWebView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-		mWebView.getSettings().setBuiltInZoomControls(true);
-		mWebView.getSettings().setDisplayZoomControls(false);
-		mWebView.loadUrl(url);
+		mGvVol.setAdapter(new VolAdapter(getApplicationContext(), listItem));
+//		mGvVol.setAdapter(new VolAdapter(this));
+		mGvVol.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View v,
+					int position, long id) {
+				Toast.makeText(getApplicationContext(), listItem.get(position).getmDrawbaleitem(), Toast.LENGTH_SHORT).show();
+ 
+			}
+		});
+		
+//		 GridView gridview = (GridView) findViewById(R.id.gvVol);
+//	      gridview.setAdapter(new TestAdapter(this));
+	}
+
+	private void init(){
+		listItem = new ArrayList<VolItem>();
+		for (int item : mDrawableItem) {
+			VolItem volItem = new VolItem();
+			volItem.setmDrawbaleitem(item);
+			listItem.add(volItem);
+		}
+	}
+	@Override
+	protected void setupView() {
+		setContentView(R.layout.activity_main);
+		mStrTitle = (String) getTitle();
+		super.setupView();
+	}
+
+	@Override
+	void searchContents() {
+		// TODO Auto-generated method stub
+
 	}
 }

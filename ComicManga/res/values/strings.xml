@@ -3,5 +3,29 @@
 
     <string name="app_name">ComicManga</string>
     <string name="hello_world">Hello world!</string>
+    <!-- Title of the navigation drawer, used by accessibility to announce state changes. -->
+    <string name="drawer_title">Navigation</string>
+    <!-- Description of the icon that opens the navigation drawer, used by accessibility. -->
+    <string name="drawer_open">Open navigation drawer</string>
+    <!-- Description of the icon that closes the navigation drawer, used by accessibility. -->
+    <string name="drawer_close">Close navigation drawer</string>
 
+    <!-- Menu -->
+    <string name="about">Thông tin về phần mềm</string>
+    <string name="exit">Thoát</string>
+    <string name="back">Trở lại</string>
+    <string name="refer">Tham khảo văn bản</string>
+    <string name="search">Tìm kiếm</string>
+    <string name="rate_app">Đánh giá ứng dụng</string>
+    <string name="share_app">Chia sẻ</string>
+    
+     <string name="title_rate_dialog">Đánh giá ứng dụng</string>
+    <string name="positive_button">Ok!</string>
+    <string name="negative_button">Không</string>
+    <string name="neutral_button">Lúc khác</string>
+    <string name="rate">Cám ơn bạn đã sử dụng phần mềm Sổ Tay Luật Dân Sự. Nếu bạn thích ứng dụng này, hãy dành chút thời gian đánh giá nó trên google play.\n Cảm ơn!</string>
+    <string name="url">file:///android_asset/khanhleoandroid@gmail.com</string>
+    <string name="email">khanhleoandroid@gmail.com</string>
+    <string name="share_title">Chia sẻ qua</string>
+    
 </resources>

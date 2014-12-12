@@ -6,5 +6,10 @@
     -->
 
     <!-- Application theme. -->
+    <style name="ProgressBar">
+        <item name="android:progressDrawable">@drawable/dark_progress</item>
+        <item name="android:minHeight">@dimen/dark_player_progressbar_height</item>
+        <item name="android:maxHeight">@dimen/dark_player_progressbar_height</item>
+    </style>
 
 </resources>

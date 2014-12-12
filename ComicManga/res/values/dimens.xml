@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="dark_player_progressbar_height">7dp</dimen>
+</resources>

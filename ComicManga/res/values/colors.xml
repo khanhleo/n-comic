@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2007 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+  
+          http://www.apache.org/licenses/LICENSE-2.0
+  
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<resources>
+    <drawable name="red">#7f00</drawable>
+    <drawable name="blue">#770000ff</drawable>
+    <drawable name="green">#7700ff00</drawable>
+    <drawable name="yellow">#77ffff00</drawable>
+    <drawable name="orange">#FFBF00</drawable>
+    <color name="color1">#ff0f9d58</color>
+    <color name="color2">#ffdb4437</color>
+    <color name="color3">#ff4285f4</color>
+    <color name="color4">#fff4b400</color>
+    <color name="dark">#393636</color>
+    <color name="white">#ffffff</color>
+    <color name="green">#25369c</color>
+    <color name="light_green">#48a6e8</color>
+    <color name="grown">#6e3e17</color>
+    <color name="light_gray">#e5e2e3</color>
+    <color name="gray">#b0afa8</color>
+    <color name="orange">#e36906</color>
+    <color name="brown">#975b2a</color>
+    
+    <color name="dark_primary">#ffffffff</color>
+    <color name="dark_secondary">#ff9e0029</color>
+    <color name="dark_tertiary">#ffcbcbcb</color>
+    <color name="dark_disabled">#ff666666</color>
+    <color name="dark_standard">#ff888888</color>
+    <color name="dark_focus">#ff4d4d4d</color>
+    <color name="dark_pressed">#ff000000</color>
+    <color name="dark_background_normal">#ff000000</color>
+    <color name="dark_background_normal_semitransparent">#88000000</color>
+    <color name="dark_background_focused">#ff595959</color>
+    <color name="dark_background_pressed">#ff000000</color>
+    <color name="dark_background_disabled">#ff000000</color>
+    <color name="dark_background_focused_disabled">#ff333333</color>
+    <color name="dark_background_failed">#ffaa0000</color>
+    <color name="dark_background_tab">#00000000</color>
+    <color name="dark_background_tab_selected">#ff2c2c2c</color>
+    <color name="dark_background_actionbar_start">#3A3A3A</color>
+    <color name="dark_background_actionbar_end">#000000</color>
+    <color name="dark_background_actionbar_border">#1f1f1f</color>
+    <color name="dark_background_actionbar_haft_solid">#10ffffff</color>   
+</resources>
