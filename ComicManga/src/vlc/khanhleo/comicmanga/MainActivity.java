@@ -6,8 +6,10 @@ import vlc.khanhle.comicmanga.R;
 import vlc.khanhleo.comicmanga.adapter.TestAdapter;
 import vlc.khanhleo.comicmanga.adapter.VolAdapter;
 import vlc.khanhleo.comicmanga.object.VolItem;
+import vlc.khanhleo.comicmanga.utils.Consts;
 import android.view.View;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.GradientDrawable.Orientation;
 import android.os.Bundle;
@@ -43,13 +45,27 @@ public class MainActivity extends DrawerLayoutActivity {
 		}else{
 			mGvVol.setNumColumns(3);
 		}
-		
-		mGvVol.setAdapter(new VolAdapter(getApplicationContext(), listItem));
+		VolAdapter va = new VolAdapter(getApplicationContext(), listItem);
+		mGvVol.setAdapter(va);
 //		mGvVol.setAdapter(new VolAdapter(this));
 		mGvVol.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				Toast.makeText(getApplicationContext(), listItem.get(position).getmDrawbaleitem(), Toast.LENGTH_SHORT).show();
+				String mVol="";
+				if(position<10){
+					mVol="vol0"+String.valueOf(position + 1);
+				}else{
+					mVol="vol"+String.valueOf(position + 1);
+				}
+				Bundle bundle = new Bundle();
+				bundle.putString(Consts.VOL,
+						mVol);
+				// After all data has been entered and calculated, go to new
+				// page for results
+				Intent myIntent = new Intent();
+				myIntent.putExtras(bundle);
+				myIntent.setClass(getBaseContext(), ChapActivity.class);
+				startActivity(myIntent);
  
 			}
 		});

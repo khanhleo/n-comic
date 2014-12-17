@@ -19,6 +19,8 @@
     <string name="rate_app">Đánh giá ứng dụng</string>
     <string name="share_app">Chia sẻ</string>
     
+    <string name="vol_not_exit">Tập này hiện chưa có, chúng tôi sẽ cập nhật sớm. \nMong bạn thông cảm</string>
+    
      <string name="title_rate_dialog">Đánh giá ứng dụng</string>
     <string name="positive_button">Ok!</string>
     <string name="negative_button">Không</string>
