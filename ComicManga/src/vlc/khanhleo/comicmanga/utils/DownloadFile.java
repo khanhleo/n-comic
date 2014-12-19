@@ -8,12 +8,14 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+import vlc.khanhleo.comicmanga.ChapActivity;
 import vlc.khanhleo.comicmanga.object.DownloadItem;
 import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,22 +24,52 @@ public class DownloadFile extends AsyncTask<DownloadItem, String, DownloadItem> 
 
 	private ProgressBar mPr;
 	private TextView mTv;
-	private Activity mActivity;
+	private ChapActivity caller;
+	private int mPosition;
+	private LinearLayout mDownload;
 
-	public DownloadFile(ProgressBar mPr, TextView mTv, Activity mActivity) {
+
+
+	public DownloadFile(ProgressBar mPr, TextView mTv, ChapActivity caller,
+			int mPosition, LinearLayout mDownload) {
 		super();
 		this.mPr = mPr;
 		this.mTv = mTv;
-		this.mActivity = mActivity;
+		this.caller = caller;
+		this.mPosition = mPosition;
+		this.mDownload = mDownload;
 	}
 
-	public Activity getmActivity() {
-		return mActivity;
+
+	public LinearLayout getmDownload() {
+		return mDownload;
 	}
 
-	public void setmActivity(Activity mActivity) {
-		this.mActivity = mActivity;
+
+	public void setmDownload(LinearLayout mDownload) {
+		this.mDownload = mDownload;
 	}
+
+
+	public int getmPosition() {
+		return mPosition;
+	}
+
+
+	public void setmPosition(int mPosition) {
+		this.mPosition = mPosition;
+	}
+
+
+	public ChapActivity getCaller() {
+		return caller;
+	}
+
+
+	public void setCaller(ChapActivity caller) {
+		this.caller = caller;
+	}
+
 
 	public ProgressBar getmPr() {
 		return mPr;
@@ -60,6 +92,7 @@ public class DownloadFile extends AsyncTask<DownloadItem, String, DownloadItem> 
 	 * */
 	@Override
 	protected void onPreExecute() {
+		mTv.setText("0%");
 		super.onPreExecute();
 		// showDialog(progress_bar_type);
 	}
@@ -73,9 +106,9 @@ public class DownloadFile extends AsyncTask<DownloadItem, String, DownloadItem> 
 		DownloadItem results;
 		try {
 
-			File root = android.os.Environment.getExternalStorageDirectory();
+//			File root = android.os.Environment.getExternalStorageDirectory();
 
-			File dir = new File(root.getAbsolutePath() + "/ComicManga/"+item[0].getmFolderName());
+			File dir = new File(Consts.getSdCardPath() +item[0].getmFolderName());
 			if (dir.exists() == false) {
 				dir.mkdirs();
 			}
@@ -145,43 +178,51 @@ public class DownloadFile extends AsyncTask<DownloadItem, String, DownloadItem> 
 		// dismiss the dialog after the file was downloaded
 		// dismissDialog(progress_bar_type);
 
+//		caller.downloadFinish(mPosition);
 		if (results != null) {
-			Toast.makeText(mActivity, "done: " + results.getmFileName(), Toast.LENGTH_SHORT).show();
 			// unzip
 //			String pathName = "";
 //			pathName = getSdCardPath() + "ComicManga/Vol1/";
 //			String zipName = "vol1_chap1.zip";
-//			Thread t1 = new Thread(new UnzipThread(pathName, zipName));
-//			t1.start();
+			Log.d("Unzip", Consts.getSdCardPath()+results.getmFolderName()+"/"+ results.getmFileName());
+			Thread t1 = new Thread(new UnzipThread(Consts.getSdCardPath()+results.getmFolderName()+"/", results.getmFileName(),caller));
+			t1.start();
 		} else {
-			Toast.makeText(mActivity, "fail", Toast.LENGTH_SHORT).show();
+			Toast.makeText(caller, "fail", Toast.LENGTH_SHORT).show();
+			caller.downloadFinish(mPosition,mDownload);
 		}
-		// Displaying downloaded image into image view
-		// Reading image path from sdcard
-		// String imagePath =
-		// Environment.getExternalStorageDirectory().toString() +
-		// "/downloadedfile.jpg";
-		// setting downloaded into image view
-		// my_image.setImageDrawable(Drawable.createFromPath(imagePath));
 	}
 	
-	private String getSdCardPath() {
-		return Environment.getExternalStorageDirectory().getPath() + "/";
-	}
+	// show toast
+		public void callBackHandler(final boolean isGood,final Context context) {
+			((Activity) context).runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					caller.downloadFinish(mPosition,mDownload);
+					if(isGood)
+						Toast.makeText(context, "done", Toast.LENGTH_LONG).show();
+					else
+						Toast.makeText(context, "unZip fail!", Toast.LENGTH_LONG).show();
+				}
+			});
+		}
 	
 	private class UnzipThread extends Thread {
 		private final String pathName;
 		private final String zipName;
+		private final ChapActivity c;
 
-		public UnzipThread(String pathName, String zipName) {
+		public UnzipThread(String pathName, String zipName, ChapActivity c) {
 			super();
 			this.pathName = pathName;
 			this.zipName = zipName;
+			this.c = c;
 		}
 
 		@Override
 		public void run() {
-			Unzip.unpackZip(pathName, zipName);
+			boolean isGood= Unzip.unpackZip(pathName, zipName);
+			callBackHandler(isGood,c);
 		}
 	}
 

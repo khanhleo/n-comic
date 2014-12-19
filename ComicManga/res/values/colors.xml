@@ -54,4 +54,5 @@
     <color name="dark_background_actionbar_end">#000000</color>
     <color name="dark_background_actionbar_border">#1f1f1f</color>
     <color name="dark_background_actionbar_haft_solid">#10ffffff</color>   
+     <color name="black_overlay">#66000000</color>
 </resources>

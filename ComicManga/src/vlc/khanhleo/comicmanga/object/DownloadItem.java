@@ -1,5 +1,8 @@
 package vlc.khanhleo.comicmanga.object;
 
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
 public class DownloadItem {
 	private String mFileName;
 	private String mUrl;
@@ -15,6 +18,7 @@ public class DownloadItem {
 		this.mUrl = mUrl;
 		this.mFolderName = mFolderName;
 	}
+	
 	public String getmFileName() {
 		return mFileName;
 	}

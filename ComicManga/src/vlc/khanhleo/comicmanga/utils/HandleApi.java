@@ -17,125 +17,99 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import vlc.khanhle.comicmanga.R;
+import vlc.khanhleo.comicmanga.ChapActivity;
 import vlc.khanhleo.comicmanga.object.DownloadItem;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
-public class HandleApi  extends AsyncTask<String, Void, DownloadItem> {
-		@Override
-		protected DownloadItem doInBackground(String... url) {
-			StringBuilder builder = new StringBuilder();
-			HttpClient client = new DefaultHttpClient();
-			HttpGet httpPost = new HttpGet(url[0]);
-			DownloadItem di = new DownloadItem();
-			try {
-				HttpResponse response = client.execute(httpPost);
-				StatusLine statusLine = response.getStatusLine();
-				int statusCode = statusLine.getStatusCode();
-				if (statusCode == 200) {
-					HttpEntity entity = response.getEntity();
-					InputStream content = entity.getContent();
-					BufferedReader reader = new BufferedReader(
-							new InputStreamReader(content));
-					String line;
-					while ((line = reader.readLine()) != null) {
-						builder.append(line);
-					}
-					String strJson = builder.toString();;
-					if (strJson != null) {
-						try {
-							JSONObject json = new JSONObject(strJson);
-							JSONObject data = json.getJSONObject("data");
-							di.setmFileName(data.getString("name"));
-							di.setmFolderName(data.getString("wp_content"));
-							di.setmUrl(data.getString("content"));
-							return di;
-						} catch (JSONException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-							return null;
-						}
-					} else {
+public class HandleApi extends AsyncTask<String, Void, DownloadItem> {
+	private ProgressDialog dialog;
+	private ChapActivity caller;
+
+	private ProgressBar mPr;
+	private TextView mTv;
+	private LinearLayout mDownload;
+	private int mPosition;
+	
+	public HandleApi(ChapActivity caller, ProgressBar mPr, TextView mTv, int mPosition, LinearLayout mDowLayout) {
+		dialog = new ProgressDialog(caller);
+		this.caller = caller;
+		this.mPr = mPr;
+		this.mTv = mTv;
+		this.mPosition = mPosition;
+		this.mDownload = mDowLayout;
+	}
+
+	@Override
+	protected void onPreExecute() {
+		dialog.show();
+	}
+
+	@Override
+	protected DownloadItem doInBackground(String... url) {
+		StringBuilder builder = new StringBuilder();
+		HttpClient client = new DefaultHttpClient();
+		HttpGet httpPost = new HttpGet(url[0]);
+		DownloadItem di = new DownloadItem();
+		try {
+			HttpResponse response = client.execute(httpPost);
+			StatusLine statusLine = response.getStatusLine();
+			int statusCode = statusLine.getStatusCode();
+			if (statusCode == 200) {
+				HttpEntity entity = response.getEntity();
+				InputStream content = entity.getContent();
+				BufferedReader reader = new BufferedReader(
+						new InputStreamReader(content));
+				String line;
+				while ((line = reader.readLine()) != null) {
+					builder.append(line);
+				}
+				String strJson = builder.toString();
+				;
+				if (strJson != null) {
+					try {
+						JSONObject json = new JSONObject(strJson);
+						JSONObject data = json.getJSONObject("data");
+//						di.setmFileName(data.getString("name"));
+						di.setmUrl(Consts.URL +data.getString("content"));
+						di.setmFileName(data.getString("file_name"));
+						return di;
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 						return null;
 					}
 				} else {
-					Log.e("http response:", "Failed to download file");
+					return null;
 				}
-				
-			} catch (ClientProtocolException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
+			} else {
+				Log.e("http response:", "Failed to download file");
 			}
-			return di;
+
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		return di;
+	}
 
-		@Override
-		protected void onPostExecute(DownloadItem result) {
-			// TODO Auto-generated method stub
-			super.onPostExecute(result);
-		}
+	@Override
+	protected void onPostExecute(DownloadItem result) {
+		if (dialog.isShowing())
+			dialog.dismiss();
+		caller.resultData(result,mPosition,this.mPr,this.mTv,this.mDownload);
+		super.onPostExecute(result);
+	}
 
-
-//	public static String getApiData(String url) {
-//		StringBuilder builder = new StringBuilder();
-//		HttpClient client = new DefaultHttpClient();
-//		HttpPost httpPost = new HttpPost(url);
-//		try {
-//			HttpResponse response = client.execute(httpPost);
-//			StatusLine statusLine = response.getStatusLine();
-//			int statusCode = statusLine.getStatusCode();
-//			if (statusCode == 200) {
-//				HttpEntity entity = response.getEntity();
-//				InputStream content = entity.getContent();
-//				BufferedReader reader = new BufferedReader(
-//						new InputStreamReader(content));
-//				String line;
-//				while ((line = reader.readLine()) != null) {
-//					builder.append(line);
-//				}
-//			} else {
-//				Log.e("http response:", "Failed to download file");
-//			}
-//		} catch (ClientProtocolException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		return builder.toString();
-//	}
-
-//	public static DownloadItem handleApiData(String url) {
-//		try {
-//			TheTask tt = null;
-//			String strJson = tt.execute(url).get();
-//			if (strJson != null) {
-//				DownloadItem di = new DownloadItem();
-//				try {
-//					JSONObject json = new JSONObject(strJson);
-//					JSONObject data = json.getJSONObject("data");
-//					di.setmFileName(data.getString("name"));
-//					di.setmFolderName(data.getString("wp_content"));
-//					di.setmUrl(data.getString("content"));
-//					return di;
-//				} catch (JSONException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//					return null;
-//				}
-//			} else {
-//				return null;
-//			}
-//		} catch (InterruptedException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		} catch (ExecutionException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
-//		// String strJson = getApiData(url);
-//		return null;
-//
-//	}
 }

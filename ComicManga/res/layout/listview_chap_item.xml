@@ -63,19 +63,20 @@
 
         <ProgressBar
             android:id="@+id/list_progress_item"
-            style="@style/ProgressBar"
+             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="0.8" >
         </ProgressBar>
+        
 
         <ImageView
             android:id="@+id/list_cancel_item"
             android:padding="5dp"
             android:layout_gravity="center"
             android:layout_width="0dp"
-            android:layout_height="30dp"
+            android:layout_height="40dp"
             android:layout_weight="0.2"
             android:src="@drawable/ico_closed" />
     </LinearLayout>

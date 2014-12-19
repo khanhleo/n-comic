@@ -18,7 +18,7 @@
     <string name="search">Tìm kiếm</string>
     <string name="rate_app">Đánh giá ứng dụng</string>
     <string name="share_app">Chia sẻ</string>
-    
+    <string name="network_error">Có lỗi kết nối, kiểm tra lại đường truyền</string>
     <string name="vol_not_exit">Tập này hiện chưa có, chúng tôi sẽ cập nhật sớm. \nMong bạn thông cảm</string>
     
      <string name="title_rate_dialog">Đánh giá ứng dụng</string>
