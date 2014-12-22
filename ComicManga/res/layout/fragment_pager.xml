@@ -20,6 +20,7 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_pager_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
@@ -56,16 +57,66 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
-            android:background="@color/black_overlay"
+            android:background="@color/setting_background"
             android:orientation="horizontal"
             tools:ignore="UselessParent" >
 
             <Button
-                android:id="@+id/dummy_button"
+                android:id="@+id/btn_previous"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/btn_previous"
+                android:clickable="true" />
+
+            <Button
+                android:id="@+id/btn_next"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/btn_next"
+                android:clickable="true" />
+
+            <LinearLayout
                 android:layout_width="0dp"
+                android:layout_margin="5dp"
+                android:padding="5dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="abc" />
+                android:background="@drawable/btn_search"
+                android:id="@+id/btn_search"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_margin="5dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/ico_search"
+                    android:inputType="number"
+                    android:singleLine="true" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:textSize="19dp"
+                    android:textColor="@color/white"
+                    android:layout_height="wrap_content"
+                    android:text="@string/go_to" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_setting"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/btn_setting"
+                android:clickable="true" />
         </LinearLayout>
     </FrameLayout>
 

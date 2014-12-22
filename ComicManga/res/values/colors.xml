@@ -55,4 +55,7 @@
     <color name="dark_background_actionbar_border">#1f1f1f</color>
     <color name="dark_background_actionbar_haft_solid">#10ffffff</color>   
      <color name="black_overlay">#66000000</color>
+     <color name="setting_background">#d0d2d4</color>
+     <color name="search_button">#c4c5c7</color>
+     <color name="search_button_press">#aeafb0</color>
 </resources>

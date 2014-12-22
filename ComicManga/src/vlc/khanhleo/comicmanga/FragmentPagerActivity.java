@@ -23,6 +23,10 @@ import vlc.khanhleo.comicmanga.menu.SystemUiHider;
 import vlc.khanhleo.comicmanga.utils.Consts;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -35,29 +39,39 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.FloatMath;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 @SuppressLint("NewApi")
-public class FragmentPagerActivity extends FragmentActivity {
+public class FragmentPagerActivity extends FragmentActivity implements
+		OnClickListener {
 	private int mNumberItem = 70;
 	// private String mVolchap ;
 	private String mChap;
 	private String mVol;
 	ArrayList<String> mListDataResult;
 
+	private View mBtnNext, mBtnPrevious, mBtnSetting, mSearch;
+
 	MyAdapter mAdapter;
 
 	ViewPager mPager;
+	private int mNextPageIndex = 1, mPreviousPageIndex;
 	private static View controlsView;
 	/**
 	 * Whether or not the system UI should be auto-hidden after
@@ -72,12 +86,6 @@ public class FragmentPagerActivity extends FragmentActivity {
 	private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
 
 	/**
-	 * If set, will toggle the system UI visibility upon interaction. Otherwise,
-	 * will show the system UI visibility upon interaction.
-	 */
-	private static final boolean TOGGLE_ON_CLICK = true;
-
-	/**
 	 * The flags to pass to {@link SystemUiHider#getInstance}.
 	 */
 	private static final int HIDER_FLAGS = SystemUiHider.FLAG_HIDE_NAVIGATION;
@@ -86,6 +94,8 @@ public class FragmentPagerActivity extends FragmentActivity {
 	 * The instance of the {@link SystemUiHider} for this activity.
 	 */
 	public static SystemUiHider mSystemUiHider;
+
+	private static boolean mVisible = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -120,59 +130,108 @@ public class FragmentPagerActivity extends FragmentActivity {
 		// this activity.
 		mSystemUiHider = SystemUiHider.getInstance(this, mPager, HIDER_FLAGS);
 		mSystemUiHider.setup();
-		// mSystemUiHider
-		// .setOnVisibilityChangeListener(new
-		// SystemUiHider.OnVisibilityChangeListener() {
-		// // Cached values.
-		// int mControlsHeight;
-		// int mShortAnimTime;
-		//
-		// @Override
-		// @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-		// public void onVisibilityChange(boolean visible) {
-		// if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-		// // If the ViewPropertyAnimator API is available
-		// // (Honeycomb MR2 and later), use it to animate the
-		// // in-layout UI controls at the bottom of the
-		// // screen.
-		// if (mControlsHeight == 0) {
-		// mControlsHeight = controlsView.getHeight();
-		// }
-		// if (mShortAnimTime == 0) {
-		// mShortAnimTime = getResources().getInteger(
-		// android.R.integer.config_shortAnimTime);
-		// }
-		// controlsView
-		// .animate()
-		// .translationY(visible ? 0 : mControlsHeight)
-		// .setDuration(mShortAnimTime);
-		// } else {
-		// // If the ViewPropertyAnimator APIs aren't
-		// // available, simply show or hide the in-layout UI
-		// // controls.
-		// controlsView.setVisibility(visible ? View.VISIBLE
-		// : View.GONE);
-		// }
-		//
-		// if (visible && AUTO_HIDE) {
-		// // Schedule a hide().
-		// delayedHide(AUTO_HIDE_DELAY_MILLIS);
-		// }
-		// }
-		// });
-		// mPager click
-		// Set up the user interaction to manually show or hide the system UI.
-		// mPager.setOnClickListener(new View.OnClickListener() {
-		// @Override
-		// public void onClick(View view) {
-		// if (TOGGLE_ON_CLICK) {
-		// mSystemUiHider.toggle();
-		// } else {
-		// mSystemUiHider.show();
-		// }
-		// }
-		// });
 
+		mBtnNext = findViewById(R.id.btn_next);
+		mBtnPrevious = findViewById(R.id.btn_previous);
+		mBtnSetting = findViewById(R.id.btn_setting);
+		mSearch = findViewById(R.id.btn_search);
+		// mTxtGoto = (EditText) findViewById(R.id.txt_go_to);
+
+		mBtnNext.setOnClickListener(this);
+		mBtnPrevious.setOnClickListener(this);
+		mBtnSetting.setOnClickListener(this);
+		mSearch.setOnClickListener(this);
+
+		mPager.setOnPageChangeListener(new OnPageChangeListener() {
+
+			@Override
+			public void onPageSelected(int arg0) {
+				// TODO Auto-generated method stub
+				if (arg0 == mNumberItem) {
+					mBtnNext.setEnabled(false);
+				} else if (arg0 == 0) {
+					mBtnPrevious.setEnabled(false);
+				} else {
+					mBtnNext.setEnabled(true);
+					mBtnPrevious.setEnabled(true);
+				}
+				mNextPageIndex = arg0 + 1;
+				mPreviousPageIndex = arg0 - 1;
+			}
+
+			@Override
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onPageScrollStateChanged(int arg0) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+	}
+
+	// button on setting panel click
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.btn_next:
+			mPager.setCurrentItem(mNextPageIndex);
+			// delayedHide(AUTO_HIDE_DELAY_MILLIS);
+			break;
+		case R.id.btn_previous:
+			mPager.setCurrentItem(mPreviousPageIndex);
+			// delayedHide(AUTO_HIDE_DELAY_MILLIS);
+			break;
+		case R.id.btn_setting:
+			// delayedHide(AUTO_HIDE_DELAY_MILLIS);
+			break;
+		case R.id.btn_search:
+			// delayedHide(AUTO_HIDE_DELAY_MILLIS);
+			showDialog(this);
+			break;
+		default:
+			break;
+		}
+		delayedHide(AUTO_HIDE_DELAY_MILLIS);
+	}
+
+	public void showDialog(final Activity activity) {
+
+		final Dialog dialog = new Dialog(activity);
+		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		dialog.setContentView(R.layout.dialog_go_to);
+		final EditText txtInput = (EditText) dialog
+				.findViewById(R.id.txt_input);
+		Button dialogButton = (Button) dialog.findViewById(R.id.btn_ok);
+		dialogButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String strCheck = txtInput.getText().toString();
+				if (!strCheck.equals("")) {
+					int number = Integer
+							.parseInt(txtInput.getText().toString());
+					getNumberIndex(number);
+					dialog.dismiss();
+				}else{
+					Toast.makeText(getApplicationContext(), activity.getString(R.string.warning_string_empty),
+							Toast.LENGTH_LONG).show();
+				}
+			}
+		});
+
+		dialog.setCancelable(true);
+		dialog.show();
+
+	}
+
+	// result data
+	public void getNumberIndex(int number) {
+//		Toast.makeText(getApplicationContext(), String.valueOf(number),
+//				Toast.LENGTH_SHORT).show();
+		 mPager.setCurrentItem(number);
 	}
 
 	@Override
@@ -185,11 +244,36 @@ public class FragmentPagerActivity extends FragmentActivity {
 		delayedHide(100);
 	}
 
-	Handler mHideHandler = new Handler();
-	Runnable mHideRunnable = new Runnable() {
+	static Handler mHideHandler = new Handler();
+	static Runnable mHideRunnable = new Runnable() {
 		@Override
 		public void run() {
-			mSystemUiHider.hide();
+			// mSystemUiHider.hide();
+
+			int mControlsHeight = 0;
+			int mShortAnimTime = 200;
+			if (mControlsHeight == 0) {
+				mControlsHeight = controlsView.getHeight();
+			}
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+				// If the ViewPropertyAnimator API is available
+				// (Honeycomb MR2 and later), use it to animate the
+				// in-layout UI controls at the bottom of the
+				// screen.
+
+				controlsView.animate()
+						.translationY(mVisible ? 0 : mControlsHeight)
+						.setDuration(mShortAnimTime);
+				// controlsView.setVisibility(visible ? View.VISIBLE
+				// : View.GONE);
+			} else {
+				// If the ViewPropertyAnimator APIs aren't
+				// available, simply show or hide the in-layout UI
+				// controls.
+				controlsView.setVisibility(mVisible ? View.VISIBLE : View.GONE);
+			}
+			mVisible = !mVisible;
+			// controlsView.setVisibility(View.GONE);
 		}
 	};
 
@@ -197,7 +281,7 @@ public class FragmentPagerActivity extends FragmentActivity {
 	 * Schedules a call to hide() in [delay] milliseconds, canceling any
 	 * previously scheduled calls.
 	 */
-	private void delayedHide(int delayMillis) {
+	public static void delayedHide(int delayMillis) {
 		mHideHandler.removeCallbacks(mHideRunnable);
 		mHideHandler.postDelayed(mHideRunnable, delayMillis);
 	}
@@ -266,6 +350,7 @@ public class FragmentPagerActivity extends FragmentActivity {
 			View tv = v.findViewById(R.id.ivContent);
 			Bitmap bmp = BitmapFactory.decodeFile(getPathImage(mNum));
 			((ImageView) tv).setImageBitmap(bmp);
+			mMatrixInit = ((ImageView) tv).getImageMatrix();
 			tv.setOnTouchListener((OnTouchListener) this);
 			return v;
 		}
@@ -297,6 +382,7 @@ public class FragmentPagerActivity extends FragmentActivity {
 		@SuppressWarnings("unused")
 		private static final float MIN_ZOOM = 1f, MAX_ZOOM = 1f;
 
+		private static Matrix mMatrixInit;
 		// These matrices will be used to scale points of the image
 		Matrix matrix = new Matrix();
 		Matrix savedMatrix = new Matrix();
@@ -334,8 +420,11 @@ public class FragmentPagerActivity extends FragmentActivity {
 				matrix.set(view.getImageMatrix());
 				savedMatrix.set(matrix);
 				start.set(event.getX(), event.getY());
-				Log.d(TAG, "mode=DRAG"); // write to LogCat
-				mode = DRAG;
+				if (!matrix.equals(mMatrixInit)) {
+					Log.d(TAG, "mode=DRAG"); // write to LogCat
+					mode = DRAG;
+				} else
+					mode = NONE;
 
 				// double tap to show menu
 				// if (firstTouch
@@ -376,11 +465,11 @@ public class FragmentPagerActivity extends FragmentActivity {
 							mShortAnimTime = getResources().getInteger(
 									android.R.integer.config_shortAnimTime);
 						}
-						boolean visible = false;
-						if (controlsView.getVisibility() == View.VISIBLE)
-							visible = false;
-						else
-							visible = true;
+						// boolean visible = false;
+						// if (controlsView.getVisibility() == View.VISIBLE)
+						// visible = false;
+						// else
+						// visible = true;
 						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
 							// If the ViewPropertyAnimator API is available
 							// (Honeycomb MR2 and later), use it to animate the
@@ -389,24 +478,28 @@ public class FragmentPagerActivity extends FragmentActivity {
 
 							controlsView
 									.animate()
-									.translationY(visible ? 0 : mControlsHeight)
+									.translationY(
+											mVisible ? 0 : mControlsHeight)
 									.setDuration(mShortAnimTime);
-							controlsView.setVisibility(visible ? View.VISIBLE
-									: View.GONE);
+							// controlsView.setVisibility(visible ? View.VISIBLE
+							// : View.GONE);
+							mVisible = !mVisible;
 						} else {
 							// If the ViewPropertyAnimator APIs aren't
 							// available, simply show or hide the in-layout UI
 							// controls.
-							controlsView.setVisibility(visible ? View.VISIBLE
+							controlsView.setVisibility(mVisible ? View.VISIBLE
 									: View.GONE);
+							mVisible = !mVisible;
 						}
 
-						if (visible && AUTO_HIDE) {
+						if (!mVisible && AUTO_HIDE) {
 							// Schedule a hide().
 							delayedHide(AUTO_HIDE_DELAY_MILLIS);
 						}
 						clickCount = 0;
 						duration = 0;
+
 					} else {
 						clickCount = 1;
 						startTime = System.currentTimeMillis();
@@ -461,22 +554,22 @@ public class FragmentPagerActivity extends FragmentActivity {
 			return true; // indicate event was handled
 		}
 
-		Handler mHideHandler = new Handler();
-		Runnable mHideRunnable = new Runnable() {
-			@Override
-			public void run() {
-				mSystemUiHider.hide();
-			}
-		};
-
-		/**
-		 * Schedules a call to hide() in [delay] milliseconds, canceling any
-		 * previously scheduled calls.
-		 */
-		private void delayedHide(int delayMillis) {
-			mHideHandler.removeCallbacks(mHideRunnable);
-			mHideHandler.postDelayed(mHideRunnable, delayMillis);
-		}
+		// Handler mHideHandler = new Handler();
+		// Runnable mHideRunnable = new Runnable() {
+		// @Override
+		// public void run() {
+		// mSystemUiHider.hide();
+		// }
+		// };
+		//
+		// /**
+		// * Schedules a call to hide() in [delay] milliseconds, canceling any
+		// * previously scheduled calls.
+		// */
+		// private void delayedHide(int delayMillis) {
+		// mHideHandler.removeCallbacks(mHideRunnable);
+		// mHideHandler.postDelayed(mHideRunnable, delayMillis);
+		// }
 
 		/*
 		 * ----------------------------------------------------------------------

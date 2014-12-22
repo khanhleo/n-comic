@@ -30,4 +30,7 @@
     <string name="email">khanhleoandroid@gmail.com</string>
     <string name="share_title">Chia sẻ qua</string>
     
+    <string name="go_to">Chọn trang</string>
+     <string name="input_number">Nhập số trang</string>
+     <string name="warning_string_empty">Hãy nhập số!</string>
 </resources>
