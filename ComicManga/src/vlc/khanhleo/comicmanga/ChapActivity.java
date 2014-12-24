@@ -8,12 +8,14 @@ import vlc.khanhle.comicmanga.R;
 import vlc.khanhleo.comicmanga.object.DownloadItem;
 import vlc.khanhleo.comicmanga.utils.Consts;
 import vlc.khanhleo.comicmanga.utils.DownloadFile;
+import vlc.khanhleo.comicmanga.utils.GetVolApi;
 import vlc.khanhleo.comicmanga.utils.HandleApi;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -36,6 +38,8 @@ public class ChapActivity extends DrawerLayoutActivity {
 	private String[] mArrayChaps = new String[] { "1", "2", "3" };
 	private boolean[] isDownloading = new boolean[] { false, false, false };
 	private boolean[] isHasDownloaded = new boolean[] { false, false, false };
+	private HandleApi[] atChekDownload = new HandleApi[3];
+	private DownloadFile[] atDownloadFile = new DownloadFile[3];
 	private ChapArrayAdapter adapter;
 	private String mVol, mChap;
 	private ListView listView;
@@ -65,12 +69,6 @@ public class ChapActivity extends DrawerLayoutActivity {
 	}
 
 	@Override
-	void searchContents() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	protected void setupView() {
 		setContentView(R.layout.activity_chap);
 		mStrTitle = (String) getTitle();
@@ -79,28 +77,32 @@ public class ChapActivity extends DrawerLayoutActivity {
 
 	// handle to download'
 	private void downloadFile(int positon, ProgressBar mPr, TextView mTv,
-			DownloadItem di,LinearLayout mDownload) {
+			DownloadItem di, LinearLayout mDownload) {
 		isDownloading[positon] = true;
-		DownloadFile df = new DownloadFile(mPr, mTv, this,positon,mDownload);
+		DownloadFile df = new DownloadFile(mPr, mTv, this, positon, mDownload);
 		df.execute(di);
+		atDownloadFile[positon] = df;
 	}
 
 	// check api to download
-	private void checkAPI(String url, ProgressBar mPr,TextView mTv, int mPosition, LinearLayout mDownload) {
-		new HandleApi(this,mPr,mTv,mPosition,mDownload).execute(url);
+	private void checkAPI(String url, ProgressBar mPr, TextView mTv,
+			int mPosition, LinearLayout mDownload, ProgressBar mPrCheckApi) {
+		HandleApi abc = (HandleApi) new HandleApi(this, mPr, mTv, mPosition,
+				mDownload,mPrCheckApi).execute(url);
+		atChekDownload[mPosition] = abc;
 	}
+
 	// call back
-	public void resultData(DownloadItem result,int positon, ProgressBar mPr, TextView mTv, LinearLayout mDownload){
-		if (result != null) {
-			if (!result.getmUrl().equals(Consts.URL+"null")) {
+	public void resultData(DownloadItem result, int positon, ProgressBar mPr,
+			TextView mTv, LinearLayout mDownload) {
+		if (result != null && result.getmUrl() != null) {
+			if (!result.getmUrl().equals(Consts.URL + "null")) {
 				// will start download file
-				result.setmFolderName(mVol+"/"+mChap);
+				result.setmFolderName(mVol + "/" + mChap);
 				mDownload.setVisibility(View.VISIBLE);
-				downloadFile(positon, mPr, mTv, result,mDownload);
-				Toast.makeText(
-						this,
-						result.getmUrl(),
-						Toast.LENGTH_LONG).show();
+				downloadFile(positon, mPr, mTv, result, mDownload);
+				Toast.makeText(this, result.getmUrl(), Toast.LENGTH_LONG)
+						.show();
 				Log.d("url", result.getmUrl());
 				Log.d("folder_name", result.getmFolderName());
 				Log.d("file_name", result.getmFileName());
@@ -117,21 +119,19 @@ public class ChapActivity extends DrawerLayoutActivity {
 									}
 								}).show();
 			}
-		}else{
-			Toast.makeText(
-					this,
-					getString(R.string.network_error),
+		} else {
+			Toast.makeText(this, getString(R.string.network_error),
 					Toast.LENGTH_SHORT).show();
 		}
 	}
-	
+
 	// call back when download finish
-	public void downloadFinish(int mPosition, LinearLayout mDownload){
-		isDownloading[mPosition]=false;
+	public void downloadFinish(int mPosition, LinearLayout mDownload) {
+		isDownloading[mPosition] = false;
 		mDownload.setVisibility(View.GONE);
-		
+
 	}
-	
+
 	@SuppressLint("ViewHolder")
 	public class ChapArrayAdapter extends ArrayAdapter<String> {
 		private final Context context;
@@ -174,6 +174,7 @@ public class ChapActivity extends DrawerLayoutActivity {
 				break;
 			}
 
+			final ProgressBar prCheckApi = (ProgressBar) v.findViewById(R.id.list_progress_check_api_item);
 			final LinearLayout llDownload = (LinearLayout) v
 					.findViewById(R.id.list_ll_download);
 			final ProgressBar pr = (ProgressBar) v
@@ -188,17 +189,19 @@ public class ChapActivity extends DrawerLayoutActivity {
 				public boolean onTouch(View v, MotionEvent event) {
 					if (event.getAction() == MotionEvent.ACTION_DOWN) {
 						click.setBackgroundResource(R.color.light_gray);
-						
+
 						// get list item of folder
-						//Consts.getSdCardPath() +item[0].getmFolderName() mVol+"/"+mChap
+						// Consts.getSdCardPath() +item[0].getmFolderName()
+						// mVol+"/"+mChap
 						mChap = "chap" + String.valueOf(ps + 1);
-						int mNumberItem =0;
-						File dir = new File(Consts.getSdCardPath()
-				                + mVol+"/"+mChap);
-				        if (dir.exists() != false) {
-				        	if(dir.listFiles().length>2)
-				        		mNumberItem=dir.listFiles().length;
-				        		isHasDownloaded[ps]=true;
+						int mNumberItem = 0;
+						File dir = new File(Consts.getSdCardPath() + mVol + "/"
+								+ mChap);
+						if (dir.exists() != false) {
+							if (dir.listFiles().length > 2) {
+								mNumberItem = dir.listFiles().length;
+								isHasDownloaded[ps] = true;
+							}
 						}
 						if (isHasDownloaded[ps]) {
 							// handle to read
@@ -207,39 +210,135 @@ public class ChapActivity extends DrawerLayoutActivity {
 							listExtras.add(mChap);
 							listExtras.add(String.valueOf(mNumberItem));
 							Bundle bundle = new Bundle();
-//							bundle.putString(Consts.VOL,
-//									mVol);
-//							bundle.putInt(Consts.NUMBER_ITEM, mNumberItem);
-//							bundle.putString(Consts.CHAP, mChap);
-							bundle.putStringArrayList(Consts.NUMBER_ITEM, listExtras);
-							// After all data has been entered and calculated, go to new
+							// bundle.putString(Consts.VOL,
+							// mVol);
+							// bundle.putInt(Consts.NUMBER_ITEM, mNumberItem);
+							// bundle.putString(Consts.CHAP, mChap);
+							bundle.putStringArrayList(Consts.NUMBER_ITEM,
+									listExtras);
+							// After all data has been entered and calculated,
+							// go to new
 							// page for results
 							Intent myIntent = new Intent();
 							myIntent.putExtras(bundle);
-							myIntent.setClass(getBaseContext(), FragmentPagerActivity.class);
+							myIntent.setClass(getBaseContext(),
+									FragmentPagerActivity.class);
 							startActivity(myIntent);
 							return true;
 						} else {
 							if (isDownloading[ps]) {
 								// still download
 							} else {
-								// check API is it has exit or not
-								String url_check_api = Consts.URL_CHECK_API;
-								
-								String name = mVol + "_" + mChap;
-								url_check_api += name;
-								checkAPI(url_check_api,pr,tv,ps,llDownload);
+								// check network has connected or not
+								if (Consts
+										.isNetworkOnline(getApplicationContext())) {
+									// check API is it has exit or not
+									String url_check_api = Consts.URL_CHECK_API;
+
+									String name = mVol + "_" + mChap;
+									url_check_api += name;
+									checkAPI(url_check_api, pr, tv, ps,
+											llDownload,prCheckApi);
+								} else {
+									Toast.makeText(
+											getApplicationContext(),
+											getString(R.string.network_unconnect),
+											Toast.LENGTH_LONG).show();
+								}
 							}
 						}
-					}else if (event.getAction() == MotionEvent.ACTION_CANCEL||event.getAction() == MotionEvent.ACTION_UP) {
+					} else if (event.getAction() == MotionEvent.ACTION_CANCEL
+							|| event.getAction() == MotionEvent.ACTION_UP) {
 						click.setBackgroundResource(R.color.white);
 					}
 					return true;
 				}
 			});
 
+			final ImageView cancel = (ImageView) v
+					.findViewById(R.id.list_cancel_item);
+			cancel.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					if (atDownloadFile[ps] != null
+							&& atDownloadFile[ps].getStatus().equals(
+									AsyncTask.Status.RUNNING)) {
+						atDownloadFile[ps].cancel(true);
+						isDownloading[ps]=false;
+						llDownload.setVisibility(View.GONE);
+					}
+				}
+			});
+
 			return v;
 		}
+	}
+
+	@Override
+	void getVolCount() {
+		if (Consts.isNetworkOnline(getApplication()))
+			new GetVolApi(this).execute(Consts.URL_GET_VOL_NUMBER_API);
+		else
+			Toast.makeText(getApplicationContext(),
+					getString(R.string.network_unconnect), Toast.LENGTH_LONG)
+					.show();
+	}
+
+	@Override
+	void appInfor() {
+		Consts.showAppInforDialog(this);
+	}
+
+	@Override
+	public void onBackPressed() {
+		boolean flag = false;
+		for (int i = 0; i < 3; i++) {
+			if (isDownloading[i]) {
+				flag = true;
+				break;
+			}
+		}
+		if (flag) {
+			new AlertDialog.Builder(this)
+					.setMessage(R.string.cancel_all_thread) 
+					.setPositiveButton("OK",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									for (int i = 0; i < 3; i++) {
+										if (atChekDownload[i] != null
+												&& atChekDownload[i]
+														.getStatus()
+														.equals(AsyncTask.Status.RUNNING)) {
+											atChekDownload[i].cancel(true);
+										}
+										if (atDownloadFile[i] != null
+												&& atDownloadFile[i]
+														.getStatus()
+														.equals(AsyncTask.Status.RUNNING)) {
+											atDownloadFile[i].cancel(true);
+										}
+									}
+									
+									dialog.cancel();
+									finish();
+								}
+							})
+					.setNegativeButton(getString(R.string.cancel),
+							new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									dialog.cancel();
+								}
+							}).show();
+		}else{
+			finish();
+		}
+
+		
 	}
 
 }

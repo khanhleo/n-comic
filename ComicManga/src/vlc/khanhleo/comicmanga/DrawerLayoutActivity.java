@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import vlc.khanhle.comicmanga.R;
+import vlc.khanhleo.comicmanga.utils.Consts;
+import vlc.khanhleo.comicmanga.utils.GetVolApi;
+import vlc.khanhleo.comicmanga.utils.HandleApi;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
@@ -34,6 +37,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -78,14 +82,14 @@ public abstract class DrawerLayoutActivity extends Activity {
 
 		// mContent = (TextView) findViewById(R.id.content_text);
 		mDrawerLayout.setDrawerListener(new DemoDrawerListener());
-//		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,
-//				GravityCompat.START);
+		// mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,
+		// GravityCompat.START);
 
 		// The drawer title must be set in order to announce state changes when
 		// accessibility is turned on. This is typically a simple description,
 		// e.g. "Navigation".
 		mDrawerLayout.setDrawerTitle(GravityCompat.START,
-				getString(R.string.drawer_title)); 
+				getString(R.string.drawer_title));
 
 		mDrawer = (ListView) findViewById(R.id.start_drawer);
 		adapter = new MenuApdapter(this);
@@ -151,91 +155,88 @@ public abstract class DrawerLayoutActivity extends Activity {
 			final TextView itemText = (TextView) v.findViewById(R.id.itemText);
 			final ImageView itemIcon = (ImageView) v
 					.findViewById(R.id.itemImage);
+			final View itemColor = v.findViewById(R.id.itemSummaryColor);
 
 			itemText.setText(summaryItem);
 			if (itemText.getText().toString().equals(getString(R.string.about))) {
 				itemIcon.setImageResource(R.drawable.ico_about);
 			} else if (itemText.getText().toString()
-					.equals(getString(R.string.exit))
-					|| itemText.getText().toString()
-							.equals(getString(R.string.back))) {
-				itemIcon.setImageResource(R.drawable.ico_exit);
-			}else if (itemText.getText().toString()
+					.equals(getString(R.string.help))) {
+				itemIcon.setImageResource(R.drawable.ico_help);
+			} else if (itemText.getText().toString()
 					.equals(getString(R.string.rate_app))) {
 				itemIcon.setImageResource(R.drawable.ico_rate);
 			} else if (itemText.getText().toString()
 					.equals(getString(R.string.share_app))) {
 				itemIcon.setImageResource(R.drawable.ico_share);
-			} else {
-//				if (position == 1)
-//					itemIcon.setImageResource(R.drawable.ico_sec);
-//				else {
-//					itemIcon.setVisibility(View.GONE);
-//				}
+			} else if (itemText.getText().toString()
+					.equals(getString(R.string.update))) {
+				itemIcon.setImageResource(R.drawable.ico_update);
 			}
-			// itemText.setOnTouchListener(new View.OnTouchListener() {
-			// @Override
-			// public boolean onTouch(View v, MotionEvent event) {
-			// Toast.makeText(getApplicationContext(),
-			// itemText.getText().toString(), Toast.LENGTH_SHORT).show();
-			// return false;
-			// }
-			// });
-			itemText.setOnClickListener(new View.OnClickListener() {
-
+			itemText.setOnTouchListener(new View.OnTouchListener() {
 				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
+				public boolean onTouch(View arg0, MotionEvent arg1) {
+					if (arg1.getAction() == MotionEvent.ACTION_DOWN) {
+						itemColor.setBackgroundResource(R.color.light_dark);
+						if (itemText.getText().toString()
+								.equals(getString(R.string.help))) {
 
-					if (itemText.getText().toString()
-							.equals(getString(R.string.about))) {
-						
-						mDrawerLayout.closeDrawer(mDrawer);
-					} else if (itemText.getText().toString()
-							.equals(getString(R.string.search))) {
-						searchContents();
-						mDrawerLayout.closeDrawer(mDrawer);
-					} else if (itemText.getText().toString()
-							.equals(getString(R.string.exit))
-							|| itemText.getText().toString()
-									.equals(getString(R.string.back))) {
-						finish();
-					} else if (itemText.getText().toString()
-							.equals(getString(R.string.rate_app))) {
-						// rate app
-						/* This code assumes you are inside an activity */
-						final Uri uri = Uri.parse("market://details?id="
-								+ getApplicationContext().getPackageName());
-						final Intent rateAppIntent = new Intent(
-								Intent.ACTION_VIEW, uri);
+							mDrawerLayout.closeDrawer(mDrawer);
+						} else if (itemText.getText().toString()
+								.equals(getString(R.string.update))) {
+							
+							getVolCount();
+							mDrawerLayout.closeDrawer(mDrawer);
+						} else if (itemText.getText().toString()
+								.equals(getString(R.string.rate_app))) {
+							// rate app
+							/* This code assumes you are inside an activity */
+							final Uri uri = Uri.parse("market://details?id="
+									+ getApplicationContext().getPackageName());
+							final Intent rateAppIntent = new Intent(
+									Intent.ACTION_VIEW, uri);
 
-						if (getPackageManager().queryIntentActivities(
-								rateAppIntent, 0).size() > 0) {
-							startActivity(rateAppIntent);
-						} else {
-							/*
-							 * handle your error case: the device has no way to
-							 * handle market urls
-							 */
-							Toast.makeText(getApplicationContext(),
-									"App is not on google play",
-									Toast.LENGTH_SHORT).show();
+							if (getPackageManager().queryIntentActivities(
+									rateAppIntent, 0).size() > 0) {
+								startActivity(rateAppIntent);
+							} else {
+								/*
+								 * handle your error case: the device has no way
+								 * to handle market urls
+								 */
+								Toast.makeText(getApplicationContext(),
+										"App is not on google play",
+										Toast.LENGTH_SHORT).show();
+							}
+							mDrawerLayout.closeDrawer(mDrawer);
+						} else if (itemText.getText().toString()
+								.equals(getString(R.string.share_app))) {
+
+							Intent sharingIntent = new Intent(
+									Intent.ACTION_SEND);
+							// Uri screenshotUri = Uri.parse(path);
+							final Uri screenshotUri = Uri
+									.parse("market://details?id="
+											+ getApplicationContext()
+													.getPackageName());
+
+							sharingIntent.setType("plain/text");
+							sharingIntent.putExtra(Intent.EXTRA_STREAM,
+									screenshotUri);
+							startActivity(Intent.createChooser(sharingIntent,
+									getString(R.string.share_title)));
+
+							mDrawerLayout.closeDrawer(mDrawer);
+						} else if (itemText.getText().toString()
+								.equals(getString(R.string.about))) {
+							appInfor();
+							mDrawerLayout.closeDrawer(mDrawer);
 						}
-						mDrawerLayout.closeDrawer(mDrawer);
-					} else if (itemText.getText().toString()
-							.equals(getString(R.string.share_app))) {
-						
-						Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-//						Uri screenshotUri = Uri.parse(path);
-						final Uri screenshotUri = Uri.parse("market://details?id="
-								+ getApplicationContext().getPackageName());
-
-						sharingIntent.setType("plain/text");
-						sharingIntent.putExtra(Intent.EXTRA_STREAM, screenshotUri);
-						startActivity(Intent.createChooser(sharingIntent, getString(R.string.share_title)));
-						
-						mDrawerLayout.closeDrawer(mDrawer);
-					} 
+					} else if (arg1.getAction() == MotionEvent.ACTION_CANCEL
+							|| arg1.getAction() == MotionEvent.ACTION_UP) {
+						itemColor.setBackgroundResource(R.color.dark);
+					}
+					return true;
 				}
 			});
 
@@ -248,17 +249,19 @@ public abstract class DrawerLayoutActivity extends Activity {
 		}
 	}
 
-	abstract void searchContents();
-
+	abstract void appInfor();
+	abstract void getVolCount();
+	
 	protected void setupView() {
 		listMenu = new ArrayList<String>();
-		listMenu.add(getString(R.string.refer));
+		listMenu.add(getString(R.string.help));
+		listMenu.add(getString(R.string.update));
 		listMenu.add(getString(R.string.about));
 		listMenu.add(getString(R.string.rate_app));
 		listMenu.add(getString(R.string.share_app));
-		listMenu.add(getString(R.string.exit));
 	}
-
+	
+	
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
@@ -298,8 +301,6 @@ public abstract class DrawerLayoutActivity extends Activity {
 			// mContent.setText(Shakespeare.DIALOGUE[position]);
 			mActionBar.setTitle(listMenu.get(position));
 			mDrawerLayout.closeDrawer(mDrawer);
-			Toast.makeText(getApplicationContext(), "abc", Toast.LENGTH_SHORT)
-					.show();
 		}
 	}
 
@@ -391,8 +392,8 @@ public abstract class DrawerLayoutActivity extends Activity {
 			mActionBar.setHomeButtonEnabled(true);
 			mTitle = mDrawerTitle = mStrTitle;
 			mActionBar.setTitle(mTitle);
-//			mActionBar.setBackgroundDrawable(getResources().getDrawable(
-//					R.drawable.orange));
+			// mActionBar.setBackgroundDrawable(getResources().getDrawable(
+			// R.drawable.orange));
 		}
 
 		/**

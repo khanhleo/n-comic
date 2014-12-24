@@ -28,7 +28,7 @@ public class DownloadFile extends AsyncTask<DownloadItem, String, DownloadItem> 
 	private int mPosition;
 	private LinearLayout mDownload;
 
-
+	private String mFileToDel;
 
 	public DownloadFile(ProgressBar mPr, TextView mTv, ChapActivity caller,
 			int mPosition, LinearLayout mDownload) {
@@ -40,36 +40,29 @@ public class DownloadFile extends AsyncTask<DownloadItem, String, DownloadItem> 
 		this.mDownload = mDownload;
 	}
 
-
 	public LinearLayout getmDownload() {
 		return mDownload;
 	}
-
 
 	public void setmDownload(LinearLayout mDownload) {
 		this.mDownload = mDownload;
 	}
 
-
 	public int getmPosition() {
 		return mPosition;
 	}
-
 
 	public void setmPosition(int mPosition) {
 		this.mPosition = mPosition;
 	}
 
-
 	public ChapActivity getCaller() {
 		return caller;
 	}
 
-
 	public void setCaller(ChapActivity caller) {
 		this.caller = caller;
 	}
-
 
 	public ProgressBar getmPr() {
 		return mPr;
@@ -106,9 +99,10 @@ public class DownloadFile extends AsyncTask<DownloadItem, String, DownloadItem> 
 		DownloadItem results;
 		try {
 
-//			File root = android.os.Environment.getExternalStorageDirectory();
+			// File root = android.os.Environment.getExternalStorageDirectory();
 
-			File dir = new File(Consts.getSdCardPath() +item[0].getmFolderName());
+			File dir = new File(Consts.getSdCardPath()
+					+ item[0].getmFolderName());
 			if (dir.exists() == false) {
 				dir.mkdirs();
 			}
@@ -128,20 +122,22 @@ public class DownloadFile extends AsyncTask<DownloadItem, String, DownloadItem> 
 			// Output stream to write file
 			OutputStream output = new FileOutputStream(file);
 
-			byte data[] = new byte[1024];
+			if (!isCancelled()) {
+				byte data[] = new byte[1024];
 
-			long total = 0;
+				long total = 0;
 
-			while ((count = input.read(data)) != -1) {
-				total += count;
-				// publishing the progress....
-				// After this onProgressUpdate will be called
-				publishProgress("" + (int) ((total * 100) / lenghtOfFile));
-				Log.d("process", "current: "
-						+ (int) ((total * 100) / lenghtOfFile));
+				while ((count = input.read(data)) != -1 && !isCancelled()) {
+					total += count;
+					// publishing the progress....
+					// After this onProgressUpdate will be called
+					publishProgress("" + (int) ((total * 100) / lenghtOfFile));
+					Log.d("process", "current: "
+							+ (int) ((total * 100) / lenghtOfFile));
 
-				// writing data to file
-				output.write(data, 0, count);
+					// writing data to file
+					output.write(data, 0, count);
+				}
 			}
 
 			// flushing output
@@ -178,35 +174,44 @@ public class DownloadFile extends AsyncTask<DownloadItem, String, DownloadItem> 
 		// dismiss the dialog after the file was downloaded
 		// dismissDialog(progress_bar_type);
 
-//		caller.downloadFinish(mPosition);
+		// caller.downloadFinish(mPosition);
 		if (results != null) {
 			// unzip
-//			String pathName = "";
-//			pathName = getSdCardPath() + "ComicManga/Vol1/";
-//			String zipName = "vol1_chap1.zip";
-			Log.d("Unzip", Consts.getSdCardPath()+results.getmFolderName()+"/"+ results.getmFileName());
-			Thread t1 = new Thread(new UnzipThread(Consts.getSdCardPath()+results.getmFolderName()+"/", results.getmFileName(),caller));
+			// String pathName = "";
+			// pathName = getSdCardPath() + "ComicManga/Vol1/";
+			// String zipName = "vol1_chap1.zip";
+			Log.d("Unzip", Consts.getSdCardPath() + results.getmFolderName()
+					+ "/" + results.getmFileName());
+			mFileToDel = Consts.getSdCardPath() + results.getmFolderName()
+					+ "/" + results.getmFileName();
+			Thread t1 = new Thread(new UnzipThread(Consts.getSdCardPath()
+					+ results.getmFolderName() + "/", results.getmFileName(),
+					caller));
 			t1.start();
 		} else {
 			Toast.makeText(caller, "fail", Toast.LENGTH_SHORT).show();
-			caller.downloadFinish(mPosition,mDownload);
+			caller.downloadFinish(mPosition, mDownload);
 		}
 	}
-	
+
 	// show toast
-		public void callBackHandler(final boolean isGood,final Context context) {
-			((Activity) context).runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					caller.downloadFinish(mPosition,mDownload);
-					if(isGood)
-						Toast.makeText(context, "done", Toast.LENGTH_LONG).show();
-					else
-						Toast.makeText(context, "unZip fail!", Toast.LENGTH_LONG).show();
-				}
-			});
-		}
-	
+	public void callBackHandler(final boolean isGood, final Context context) {
+		((Activity) context).runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				caller.downloadFinish(mPosition, mDownload);
+				if (isGood) {
+					// if has unzip success, delete file .zip
+					File file = new File(mFileToDel);
+					file.delete();
+					Toast.makeText(context, "done", Toast.LENGTH_LONG).show();
+				} else
+					Toast.makeText(context, "unZip fail!", Toast.LENGTH_LONG)
+							.show();
+			}
+		});
+	}
+
 	private class UnzipThread extends Thread {
 		private final String pathName;
 		private final String zipName;
@@ -221,8 +226,8 @@ public class DownloadFile extends AsyncTask<DownloadItem, String, DownloadItem> 
 
 		@Override
 		public void run() {
-			boolean isGood= Unzip.unpackZip(pathName, zipName);
-			callBackHandler(isGood,c);
+			boolean isGood = Unzip.unpackZip(pathName, zipName);
+			callBackHandler(isGood, c);
 		}
 	}
 

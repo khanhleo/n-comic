@@ -11,26 +11,35 @@
     <string name="drawer_close">Close navigation drawer</string>
 
     <!-- Menu -->
+    <string name="help">Hướng dẫn</string>
+    <string name="update">Cập nhật</string>
     <string name="about">Thông tin về phần mềm</string>
     <string name="exit">Thoát</string>
     <string name="back">Trở lại</string>
-    <string name="refer">Tham khảo văn bản</string>
-    <string name="search">Tìm kiếm</string>
     <string name="rate_app">Đánh giá ứng dụng</string>
     <string name="share_app">Chia sẻ</string>
+    
     <string name="network_error">Có lỗi kết nối, kiểm tra lại đường truyền</string>
     <string name="vol_not_exit">Tập này hiện chưa có, chúng tôi sẽ cập nhật sớm. \nMong bạn thông cảm</string>
-    
-     <string name="title_rate_dialog">Đánh giá ứng dụng</string>
+    <string name="vol_count">Hiện đã có %1$s tập trên server. Bạn có thể tải xuống từ tập 1 đến tập %2$s!</string>
+    <string name="contact">Phiên bản hiện tại: 1.0 \nNếu có bất cứ thắc mắc hay đóng góp gì hãy liên hệ với chúng tôi qua email: <a href="mailto:khanhleoandroid@gmail.com">khanhleoandroid@gmail.com</a>.</string>
+    <string name="title_rate_dialog">Đánh giá ứng dụng</string>
     <string name="positive_button">Ok!</string>
     <string name="negative_button">Không</string>
     <string name="neutral_button">Lúc khác</string>
-    <string name="rate">Cám ơn bạn đã sử dụng phần mềm Sổ Tay Luật Dân Sự. Nếu bạn thích ứng dụng này, hãy dành chút thời gian đánh giá nó trên google play.\n Cảm ơn!</string>
+    <string name="network_unconnect">Hãy kết nối mạng rồi thử lại!</string>
+    <string name="cancel_all_thread">Đang tải dữ liệu, bạn muốn dừng khi thoát ra?</string>
+    
+    <string name="rate">Cám ơn bạn đã sử dụng phần mềm Truyện tranh: Dragon ball. Nếu bạn thích ứng dụng này, hãy dành chút thời gian đánh giá nó trên google play.\n Cảm ơn!</string>
     <string name="url">file:///android_asset/khanhleoandroid@gmail.com</string>
     <string name="email">khanhleoandroid@gmail.com</string>
     <string name="share_title">Chia sẻ qua</string>
-    
     <string name="go_to">Chọn trang</string>
-     <string name="input_number">Nhập số trang</string>
-     <string name="warning_string_empty">Hãy nhập số!</string>
+    <string name="input_number">Nhập số trang</string>
+    <string name="warning_string_empty">Hãy nhập số!</string>
+    <string name="set_brightness">Chỉnh độ sáng</string>
+    
+    <string name="ok">Đồng Ý</string>
+    <string name="cancel">Không</string>
+
 </resources>

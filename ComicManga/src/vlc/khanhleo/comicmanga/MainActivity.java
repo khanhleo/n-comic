@@ -7,6 +7,7 @@ import vlc.khanhleo.comicmanga.adapter.TestAdapter;
 import vlc.khanhleo.comicmanga.adapter.VolAdapter;
 import vlc.khanhleo.comicmanga.object.VolItem;
 import vlc.khanhleo.comicmanga.utils.Consts;
+import vlc.khanhleo.comicmanga.utils.GetVolApi;
 import android.view.View;
 import android.app.Activity;
 import android.content.Intent;
@@ -89,9 +90,19 @@ public class MainActivity extends DrawerLayoutActivity {
 		super.setupView();
 	}
 
-	@Override
-	void searchContents() {
-		// TODO Auto-generated method stub
 
+	@Override
+	void getVolCount() {
+		if (Consts.isNetworkOnline(getApplication()))
+			new GetVolApi(this).execute(Consts.URL_GET_VOL_NUMBER_API);
+		else
+			Toast.makeText(getApplicationContext(),
+					getString(R.string.network_unconnect), Toast.LENGTH_LONG)
+					.show();
+	}
+
+	@Override
+	void appInfor() {
+		Consts.showAppInforDialog(this);
 	}
 }

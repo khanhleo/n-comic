@@ -26,14 +26,17 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings.SettingNotFoundException;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -55,6 +58,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
 
 @SuppressLint("NewApi")
@@ -179,18 +184,15 @@ public class FragmentPagerActivity extends FragmentActivity implements
 		switch (v.getId()) {
 		case R.id.btn_next:
 			mPager.setCurrentItem(mNextPageIndex);
-			// delayedHide(AUTO_HIDE_DELAY_MILLIS);
 			break;
 		case R.id.btn_previous:
 			mPager.setCurrentItem(mPreviousPageIndex);
-			// delayedHide(AUTO_HIDE_DELAY_MILLIS);
 			break;
 		case R.id.btn_setting:
-			// delayedHide(AUTO_HIDE_DELAY_MILLIS);
+			showBrightnessDialog(this);
 			break;
 		case R.id.btn_search:
-			// delayedHide(AUTO_HIDE_DELAY_MILLIS);
-			showDialog(this);
+			showGoToDialog(this);
 			break;
 		default:
 			break;
@@ -198,10 +200,11 @@ public class FragmentPagerActivity extends FragmentActivity implements
 		delayedHide(AUTO_HIDE_DELAY_MILLIS);
 	}
 
-	public void showDialog(final Activity activity) {
-
+	// go to dialog
+	public void showGoToDialog(final Activity activity) {
 		final Dialog dialog = new Dialog(activity);
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent); 
 		dialog.setContentView(R.layout.dialog_go_to);
 		final EditText txtInput = (EditText) dialog
 				.findViewById(R.id.txt_input);
@@ -227,6 +230,64 @@ public class FragmentPagerActivity extends FragmentActivity implements
 
 	}
 
+	// brightness dialog
+	public void showBrightnessDialog(final Activity activity) {
+
+		final Dialog dialog = new Dialog(activity);
+		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent); 
+		dialog.setContentView(R.layout.dialog_brightness);
+		final SeekBar sbBrightness = (SeekBar) dialog
+				.findViewById(R.id.sb_brightness);
+		sbBrightness.setMax(255);
+
+		   float curBrightnessValue = 0;
+		  try {
+		   curBrightnessValue = android.provider.Settings.System.getInt(
+		     getContentResolver(),
+		     android.provider.Settings.System.SCREEN_BRIGHTNESS);
+		  } catch (SettingNotFoundException e) {
+		   e.printStackTrace();
+		  }
+
+		   int screen_brightness = (int) curBrightnessValue;
+		   sbBrightness.setProgress(screen_brightness);
+		  sbBrightness.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+		   int progress = 0;
+
+		    @Override
+		   public void onProgressChanged(SeekBar seekBar, int progresValue,
+		     boolean fromUser) {
+		    progress = progresValue;
+		   }
+
+		    @Override
+		   public void onStartTrackingTouch(SeekBar seekBar) {
+		    // Do something here,
+		    // if you want to do anything at the start of
+		    // touching the seekbar
+		   }
+
+		    @Override
+		   public void onStopTrackingTouch(SeekBar seekBar) {
+		    android.provider.Settings.System.putInt(getContentResolver(),
+		      android.provider.Settings.System.SCREEN_BRIGHTNESS,
+		      progress);
+		   }
+		  });
+		Button dialogButton = (Button) dialog.findViewById(R.id.btn_ok);
+		dialogButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+			}
+		});
+
+		dialog.setCancelable(true);
+		dialog.show();
+
+	}
+	
 	// result data
 	public void getNumberIndex(int number) {
 //		Toast.makeText(getApplicationContext(), String.valueOf(number),
