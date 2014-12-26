@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import vlc.khanhle.comicmanga.R;
+import vlc.khanhleo.comicmanga.data.VolListDao;
 import vlc.khanhleo.comicmanga.object.DownloadItem;
 import vlc.khanhleo.comicmanga.utils.Consts;
 import vlc.khanhleo.comicmanga.utils.DownloadFile;
@@ -47,10 +48,7 @@ public class ChapActivity extends DrawerLayoutActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Bundle extras = getIntent().getExtras();
-		if (extras != null) {
-			mVol = extras.getString(Consts.VOL);
-		}
+		
 		listView = (ListView) findViewById(R.id.lv_chap);
 
 		// adapter = new SummaryAdapter(this);
@@ -71,7 +69,14 @@ public class ChapActivity extends DrawerLayoutActivity {
 	@Override
 	protected void setupView() {
 		setContentView(R.layout.activity_chap);
-		mStrTitle = (String) getTitle();
+		String strVol = "";
+		Bundle extras = getIntent().getExtras();
+		if (extras != null) {
+			mVol = extras.getString(Consts.VOL);
+			strVol = mVol.substring(3);
+		}
+		
+		mStrTitle = getString(R.string.vol_number, strVol);
 		super.setupView();
 	}
 
@@ -129,7 +134,12 @@ public class ChapActivity extends DrawerLayoutActivity {
 	public void downloadFinish(int mPosition, LinearLayout mDownload) {
 		isDownloading[mPosition] = false;
 		mDownload.setVisibility(View.GONE);
-
+		
+		// save to data base that have download
+		String strVol = mVol.substring(3);
+		VolListDao mVolListDao = new VolListDao(getApplicationContext());
+		mVolListDao.updateRowIsDownload("true", strVol);
+		mVolListDao.close();
 	}
 
 	@SuppressLint("ViewHolder")
@@ -209,6 +219,13 @@ public class ChapActivity extends DrawerLayoutActivity {
 							listExtras.add(mVol);
 							listExtras.add(mChap);
 							listExtras.add(String.valueOf(mNumberItem));
+							
+							// save to data base that have read
+							String strVol = mVol.substring(3);
+							VolListDao mVolListDao = new VolListDao(getApplicationContext());
+							mVolListDao.updateRowIsNew("true", strVol);
+							mVolListDao.close();
+							
 							Bundle bundle = new Bundle();
 							// bundle.putString(Consts.VOL,
 							// mVol);
@@ -224,6 +241,7 @@ public class ChapActivity extends DrawerLayoutActivity {
 							myIntent.setClass(getBaseContext(),
 									FragmentPagerActivity.class);
 							startActivity(myIntent);
+							
 							return true;
 						} else {
 							if (isDownloading[ps]) {

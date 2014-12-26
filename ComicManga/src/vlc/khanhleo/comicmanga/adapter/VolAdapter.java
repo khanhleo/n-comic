@@ -26,9 +26,10 @@ public class VolAdapter extends BaseAdapter {
 			R.drawable.vol19, R.drawable.vol20, R.drawable.vol21,
 			R.drawable.vol22, R.drawable.vol23, R.drawable.vol24,
 			R.drawable.vol25, R.drawable.vol26, R.drawable.vol27,
-			R.drawable.vol28, R.drawable.vol29, R.drawable.vol30, R.drawable.vol31,
-			R.drawable.vol32, R.drawable.vol33, R.drawable.vol34 };
-	
+			R.drawable.vol28, R.drawable.vol29, R.drawable.vol30,
+			R.drawable.vol31, R.drawable.vol32, R.drawable.vol33,
+			R.drawable.vol34 };
+
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
@@ -56,19 +57,17 @@ public class VolAdapter extends BaseAdapter {
 		this.itemImage = itemImage;
 
 	}
-	
-	public VolAdapter(Context context){
-		inflater = LayoutInflater.from(context);
-		itemImage = new  ArrayList<VolItem>();
-		for (int item : mDrawableItem) {
-			VolItem volItem = new VolItem();
-			volItem.setmDrawbaleitem(item);
-			itemImage.add(volItem);
-		}
-	}
-	
-	
-	
+
+//	public VolAdapter(Context context) {
+//		inflater = LayoutInflater.from(context);
+//		itemImage = new ArrayList<VolItem>();
+//		for (int item : mDrawableItem) {
+//			VolItem volItem = new VolItem();
+//			volItem.setmDrawbaleitem(item);
+//			itemImage.add(volItem);
+//		}
+//	}
+
 	@SuppressLint("ViewTag")
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -84,11 +83,30 @@ public class VolAdapter extends BaseAdapter {
 
 			gridView = inflater.inflate(R.layout.gridview_vol_item, parent,
 					false);
-			gridView.setTag(R.id.grid_item_image, gridView.findViewById(R.id.grid_item_image));
+			gridView.setTag(R.id.grid_item_image,
+					gridView.findViewById(R.id.grid_item_image));
+			gridView.setTag(R.id.grid_item_new,
+					gridView.findViewById(R.id.grid_item_new));
+			gridView.setTag(R.id.grid_item_download,
+					gridView.findViewById(R.id.grid_item_download));
 		}
-			ImageView volItem = (ImageView) gridView.getTag(R.id.grid_item_image);
-			VolItem item = (VolItem) getItem(position);
-			volItem.setImageResource(item.getmDrawbaleitem());
+		ImageView volItemImage = (ImageView) gridView
+				.getTag(R.id.grid_item_image);
+		ImageView volItemNew = (ImageView) gridView.getTag(R.id.grid_item_new);
+		ImageView volItemDownload = (ImageView) gridView
+				.getTag(R.id.grid_item_download);
+		VolItem item = (VolItem) getItem(position);
+		volItemImage.setImageResource(item.getmDrawbaleitem());
+		if (item.getmIsDownload().equals("false")) {
+			volItemDownload.setVisibility(View.VISIBLE);
+		} else {
+			volItemDownload.setVisibility(View.INVISIBLE);
+		}
+		if (item.getmIsNew().equals("false")) {
+			volItemNew.setVisibility(View.VISIBLE);
+		} else {
+			volItemNew.setVisibility(View.INVISIBLE);
+		}
 
 		// else {
 		// gridView = (View) convertView;

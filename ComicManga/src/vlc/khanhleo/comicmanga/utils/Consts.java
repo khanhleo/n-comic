@@ -4,6 +4,8 @@ import vlc.khanhle.comicmanga.R;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
@@ -22,6 +24,10 @@ public class Consts {
 	public static final String URL = "http://khanhleo.com/";
 	public static final String URL_CHECK_API = "http://khanhleo.com/api/check_vol/?name=";
 	public static final String URL_GET_VOL_NUMBER_API = "http://khanhleo.com/api/get_vol_number/";
+	
+	public static final String APPLICATION_PREFERENCES = "comicmanga_preferences";
+	public static final int PREFERENCES_MODE = Context.MODE_PRIVATE;
+	public static final String IS_FIRST_USE = "false";
 
 	public static String getSdCardPath() {
 		return Environment.getExternalStorageDirectory().getAbsolutePath()
@@ -46,23 +52,50 @@ public class Consts {
 		dialog.setCancelable(true);
 		dialog.show();
 	}
-	public static boolean isNetworkOnline(Context context) {
-	    boolean status=false;
-	    try{
-	        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-	        NetworkInfo netInfo = cm.getNetworkInfo(0);
-	        if (netInfo != null && netInfo.getState()==NetworkInfo.State.CONNECTED) {
-	            status= true;
-	        }else {
-	            netInfo = cm.getNetworkInfo(1);
-	            if(netInfo!=null && netInfo.getState()==NetworkInfo.State.CONNECTED)
-	                status= true;
-	        }
-	    }catch(Exception e){
-	        e.printStackTrace();  
-	        return false;
-	    }
-	    return status;
 
-	    }
+	public static boolean isNetworkOnline(Context context) {
+		boolean status = false;
+		try {
+			ConnectivityManager cm = (ConnectivityManager) context
+					.getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo netInfo = cm.getNetworkInfo(0);
+			if (netInfo != null
+					&& netInfo.getState() == NetworkInfo.State.CONNECTED) {
+				status = true;
+			} else {
+				netInfo = cm.getNetworkInfo(1);
+				if (netInfo != null
+						&& netInfo.getState() == NetworkInfo.State.CONNECTED)
+					status = true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return status;
+
+	}
+
+	// get, set for first use app
+	public static boolean getIsFirstUse(final Context context) {
+		SharedPreferences prefs = context.getSharedPreferences(
+				APPLICATION_PREFERENCES,
+				PREFERENCES_MODE);
+
+		boolean value = prefs.getBoolean(
+				IS_FIRST_USE, true);
+
+		return value;
+	}
+
+	public static void setIsFirstUse(final Context context, final Boolean value) {
+		SharedPreferences prefs = context.getSharedPreferences(
+				APPLICATION_PREFERENCES,
+				PREFERENCES_MODE);
+		Editor editor = prefs.edit();
+
+		editor.putBoolean(IS_FIRST_USE, value);
+
+		editor.commit();
+	}
 }

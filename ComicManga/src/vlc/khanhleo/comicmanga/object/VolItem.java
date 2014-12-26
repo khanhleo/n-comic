@@ -2,14 +2,16 @@ package vlc.khanhleo.comicmanga.object;
 
 
 public class VolItem {
-	private int mId;
+	private String mId;
 	private int mDrawbaleitem;
 	private String mIsNew;
 	private String mIsDownload;
 	
 	public VolItem(){};
 	
-	public VolItem(int mId, int mDrawbaleitem, String mIsNew, String mIsDownload) {
+
+	public VolItem(String mId, int mDrawbaleitem, String mIsNew,
+			String mIsDownload) {
 		super();
 		this.mId = mId;
 		this.mDrawbaleitem = mDrawbaleitem;
@@ -17,17 +19,12 @@ public class VolItem {
 		this.mIsDownload = mIsDownload;
 	}
 
+
 	public int getmDrawbaleitem() {
 		return mDrawbaleitem;
 	}
 	public void setmDrawbaleitem(int mDrawbaleitem) {
 		this.mDrawbaleitem = mDrawbaleitem;
-	}
-	public int getmId() {
-		return mId;
-	}
-	public void setmId(int mId) {
-		this.mId = mId;
 	}
 	public String getmIsNew() {
 		return mIsNew;
@@ -40,6 +37,16 @@ public class VolItem {
 	}
 	public void setmIsDownload(String mIsDownload) {
 		this.mIsDownload = mIsDownload;
+	}
+
+
+	public String getmId() {
+		return mId;
+	}
+
+
+	public void setmId(String mId) {
+		this.mId = mId;
 	}
 	
 }

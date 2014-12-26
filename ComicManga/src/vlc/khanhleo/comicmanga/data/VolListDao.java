@@ -30,14 +30,21 @@ public class VolListDao extends DaoBase {
 		values.put(DbConstraint.ID, rowData.getmId());
 		values.put(DbConstraint.IS_DOWNLOAD, rowData.getmIsDownload());
 		values.put(DbConstraint.IS_NEW, rowData.getmIsNew());
-
+		values.put(DbConstraint.IMAGE, rowData.getmDrawbaleitem());
 		return db.insertOrThrow(tableName, null, values);
 	}
 
-	public long updateRow(VolItem rowData, String id) {
+	public long updateRowIsDownload(String mIsDownload, String id) {
 		ContentValues values = new ContentValues();
-		values.put(DbConstraint.IS_DOWNLOAD, rowData.getmIsDownload());
-		values.put(DbConstraint.IS_NEW, rowData.getmIsNew());
+		values.put(DbConstraint.IS_DOWNLOAD, mIsDownload);
+
+		// return db.update(tableName, values, null, null);
+		return db.update(tableName, values, DbConstraint.ID + " = ?",
+				new String[] { id });
+	}
+	public long updateRowIsNew(String mIsNew, String id) {
+		ContentValues values = new ContentValues();
+		values.put(DbConstraint.IS_NEW, mIsNew);
 
 		// return db.update(tableName, values, null, null);
 		return db.update(tableName, values, DbConstraint.ID + " = ?",
@@ -61,7 +68,7 @@ public class VolListDao extends DaoBase {
 			if (cursor.moveToFirst()) {
 				do {
 					rowData = new VolItem();
-					rowData.setmId(cursor.getInt(cursor
+					rowData.setmId(cursor.getString(cursor
 							.getColumnIndex(DbConstraint.ID)));
 					rowData.setmIsDownload(cursor.getString(cursor
 							.getColumnIndex(DbConstraint.IS_DOWNLOAD)));
