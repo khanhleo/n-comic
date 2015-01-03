@@ -16,23 +16,23 @@
 
 package vlc.khanhleo.comicmanga;
 
+import java.io.File;
 import java.util.ArrayList;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 
 import vlc.khanhle.comicmanga.R;
 import vlc.khanhleo.comicmanga.menu.SystemUiHider;
 import vlc.khanhleo.comicmanga.utils.Consts;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PointF;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,19 +45,18 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.FloatMath;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
@@ -69,7 +68,7 @@ public class FragmentPagerActivity extends FragmentActivity implements
 	// private String mVolchap ;
 	private String mChap;
 	private String mVol;
-	ArrayList<String> mListDataResult;
+	ArrayList<String> mListDataResult, mListFilePath;
 
 	private View mBtnNext, mBtnPrevious, mBtnSetting, mSearch;
 
@@ -101,11 +100,15 @@ public class FragmentPagerActivity extends FragmentActivity implements
 	public static SystemUiHider mSystemUiHider;
 
 	private static boolean mVisible = false;
+	
+	/** The view to show the ad. */
+	private AdView adView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mListDataResult = new ArrayList<String>();
+		mListFilePath = new ArrayList<String>();
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
 			// mVol = extras.getString(Consts.VOL);
@@ -115,6 +118,7 @@ public class FragmentPagerActivity extends FragmentActivity implements
 			mVol = mListDataResult.get(0);
 			mChap = mListDataResult.get(1);
 			mNumberItem = Integer.parseInt(mListDataResult.get(2));
+			mListFilePath = getPathIamgeByList(mVol, mChap);
 		}
 
 		// Remove title bar
@@ -176,8 +180,52 @@ public class FragmentPagerActivity extends FragmentActivity implements
 
 			}
 		});
+		
+		setupAdmob();
+	}
+	
+	private void setupAdmob(){
+		if (Consts.isNetworkOnline(getApplicationContext())) {
+
+			// Create an ad.
+			adView = new AdView(this);
+			adView.setAdSize(AdSize.BANNER);
+			adView.setAdUnitId(Consts.AD_UNIT_ID);
+
+			// Add the AdView to the view hierarchy. The view will have no size
+			// until the ad is loaded.
+			LinearLayout layout = (LinearLayout) findViewById(R.id.llAdmobs);
+			layout.addView(adView);
+
+			// Create an ad request. Check logcat output for the hashed device
+			// ID to
+			// get test ads on a physical device.
+			AdRequest adRequest = new AdRequest.Builder().build();
+
+			// Start loading the ad in the background.
+			adView.loadAd(adRequest);
+		} else {
+			LinearLayout layout = (LinearLayout) findViewById(R.id.llBottom);
+			layout.setVisibility(View.GONE);
+		}
 	}
 
+	// get list file path
+	private ArrayList<String> getPathIamgeByList(String mVol, String mChap){
+		File dir = new File(Consts.getSdCardPath() + mVol + "/"
+				+ mChap);
+		ArrayList<String> list = new ArrayList<String>();
+		if (dir.exists() != false) {
+			if (dir.listFiles().length > 2) {
+				for (File itemFile : dir.listFiles()) {
+					list.add(itemFile.getAbsolutePath());
+				}
+			}
+		}
+		
+		return list;
+	}
+	
 	// button on setting panel click
 	@Override
 	public void onClick(View v) {
@@ -359,7 +407,7 @@ public class FragmentPagerActivity extends FragmentActivity implements
 
 		@Override
 		public Fragment getItem(int position) {
-			return ArrayListFragment.newInstance(position, mVol, mChap);
+			return ArrayListFragment.newInstance(position, mVol, mChap, mListFilePath);
 		}
 	}
 
@@ -368,12 +416,13 @@ public class FragmentPagerActivity extends FragmentActivity implements
 		private int mNum;
 		private String mVol;
 		private String mChap;
+		private ArrayList<String> mFilePath;
 
 		/**
 		 * Create a new instance of CountingFragment, providing "num" as an
 		 * argument.
 		 */
-		static ArrayListFragment newInstance(int mNum, String mVol, String mChap) {
+		static ArrayListFragment newInstance(int mNum, String mVol, String mChap, ArrayList<String> mListFilePath) {
 			ArrayListFragment f = new ArrayListFragment();
 
 			// Supply num input as an argument.
@@ -381,6 +430,7 @@ public class FragmentPagerActivity extends FragmentActivity implements
 			args.putInt("num", mNum);
 			args.putString("vol", mVol);
 			args.putString("chap", mChap);
+			args.putStringArrayList("file_path", mListFilePath);
 			f.setArguments(args);
 
 			return f;
@@ -397,6 +447,7 @@ public class FragmentPagerActivity extends FragmentActivity implements
 					: "vol01";
 			mChap = getArguments() != null ? getArguments().getString("chap")
 					: "chap1";
+			mFilePath = getArguments()!=null? getArguments().getStringArrayList("file_path"):null;
 		}
 
 		/**
@@ -409,7 +460,8 @@ public class FragmentPagerActivity extends FragmentActivity implements
 			View v = inflater.inflate(R.layout.fragment_pager_list, container,
 					false);
 			View tv = v.findViewById(R.id.ivContent);
-			Bitmap bmp = BitmapFactory.decodeFile(getPathImage(mNum));
+//			Bitmap bmp = BitmapFactory.decodeFile(getPathImage(mNum));
+			Bitmap bmp = BitmapFactory.decodeFile(mFilePath.get(mNum));
 			((ImageView) tv).setImageBitmap(bmp);
 			mMatrixInit = ((ImageView) tv).getImageMatrix();
 			tv.setOnTouchListener((OnTouchListener) this);
@@ -429,7 +481,8 @@ public class FragmentPagerActivity extends FragmentActivity implements
 					+ fileName;
 			return pathName;
 		}
-
+		
+		
 		@Override
 		public void onActivityCreated(Bundle savedInstanceState) {
 			super.onActivityCreated(savedInstanceState);

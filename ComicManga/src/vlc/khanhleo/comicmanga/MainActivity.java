@@ -3,22 +3,25 @@ package vlc.khanhleo.comicmanga;
 import java.util.ArrayList;
 
 import vlc.khanhle.comicmanga.R;
-import vlc.khanhleo.comicmanga.adapter.TestAdapter;
 import vlc.khanhleo.comicmanga.adapter.VolAdapter;
 import vlc.khanhleo.comicmanga.data.VolListDao;
 import vlc.khanhleo.comicmanga.object.VolItem;
 import vlc.khanhleo.comicmanga.utils.Consts;
 import vlc.khanhleo.comicmanga.utils.GetVolApi;
-import android.view.View;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.drawable.GradientDrawable.Orientation;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 
 public class MainActivity extends DrawerLayoutActivity {
 
@@ -36,51 +39,102 @@ public class MainActivity extends DrawerLayoutActivity {
 			R.drawable.vol28, R.drawable.vol29, R.drawable.vol30,
 			R.drawable.vol31, R.drawable.vol32, R.drawable.vol33,
 			R.drawable.vol34 };
-
+	/** The view to show the ad. */
+	private AdView adView;
+	private InterstitialAd interstitial;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// setContentView(R.layout.activity_main);
 		init();
-//		mGvVol = (GridView) findViewById(R.id.gvVol);
-//		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//			mGvVol.setNumColumns(5);
-//		} else {
-//			mGvVol.setNumColumns(3);
-//		}
-//		VolAdapter va = new VolAdapter(getApplicationContext(), listItem);
-//		mGvVol.setAdapter(va);
-//		// mGvVol.setAdapter(new VolAdapter(this));
-//		mGvVol.setOnItemClickListener(new OnItemClickListener() {
-//			public void onItemClick(AdapterView<?> parent, View v,
-//					int position, long id) {
-//				String mVol = "";
-//				if (position < 10) {
-//					mVol = "vol0" + String.valueOf(position + 1);
-//				} else {
-//					mVol = "vol" + String.valueOf(position + 1);
-//				}
-//				Bundle bundle = new Bundle();
-//				bundle.putString(Consts.VOL, mVol);
-//				// After all data has been entered and calculated, go to new
-//				// page for results
-//				Intent myIntent = new Intent();
-//				myIntent.putExtras(bundle);
-//				myIntent.setClass(getBaseContext(), ChapActivity.class);
-//				startActivity(myIntent);
-//
-//			}
-//		});
+		if (Consts.isNetworkOnline(getApplicationContext())) {
+
+			// Create an ad.
+			adView = new AdView(this);
+			adView.setAdSize(AdSize.BANNER);
+			adView.setAdUnitId(Consts.AD_UNIT_ID);
+
+			// Add the AdView to the view hierarchy. The view will have no size
+			// until the ad is loaded.
+			LinearLayout layout = (LinearLayout) findViewById(R.id.llAdmobs);
+			layout.addView(adView);
+
+			// Create an ad request. Check logcat output for the hashed device
+			// ID to
+			// get test ads on a physical device.
+			AdRequest adRequest = new AdRequest.Builder().build();
+
+			// Start loading the ad in the background.
+			adView.loadAd(adRequest);
+			
+			// count to show Interstitial ad
+			int count = Consts.getCountAd(getApplicationContext());
+			interstitial = new InterstitialAd(this);
+			if(count>5){
+				 // Create the interstitial.
+			    interstitial.setAdUnitId(Consts.AD_INTERSTITIAL_ID);
+
+			    // Begin loading your interstitial.
+			    interstitial.loadAd(adRequest);
+			    Consts.setCountAd(getApplicationContext(), 0);
+			}else{
+				Consts.setCountAd(getApplicationContext(), count+1);
+			}
+			
+		} else {
+			LinearLayout layout = (LinearLayout) findViewById(R.id.llBottom);
+			layout.setVisibility(View.GONE);
+		}
+		// mGvVol = (GridView) findViewById(R.id.gvVol);
+		// if (getResources().getConfiguration().orientation ==
+		// Configuration.ORIENTATION_LANDSCAPE) {
+		// mGvVol.setNumColumns(5);
+		// } else {
+		// mGvVol.setNumColumns(3);
+		// }
+		// VolAdapter va = new VolAdapter(getApplicationContext(), listItem);
+		// mGvVol.setAdapter(va);
+		// // mGvVol.setAdapter(new VolAdapter(this));
+		// mGvVol.setOnItemClickListener(new OnItemClickListener() {
+		// public void onItemClick(AdapterView<?> parent, View v,
+		// int position, long id) {
+		// String mVol = "";
+		// if (position < 10) {
+		// mVol = "vol0" + String.valueOf(position + 1);
+		// } else {
+		// mVol = "vol" + String.valueOf(position + 1);
+		// }
+		// Bundle bundle = new Bundle();
+		// bundle.putString(Consts.VOL, mVol);
+		// // After all data has been entered and calculated, go to new
+		// // page for results
+		// Intent myIntent = new Intent();
+		// myIntent.putExtras(bundle);
+		// myIntent.setClass(getBaseContext(), ChapActivity.class);
+		// startActivity(myIntent);
+		//
+		// }
+		// });
 
 		// GridView gridview = (GridView) findViewById(R.id.gvVol);
 		// gridview.setAdapter(new TestAdapter(this));
 	}
 
+	// Invoke displayInterstitial() when you are ready to display an interstitial.
+	  public void displayInterstitial() {
+	    if (interstitial.isLoaded()) {
+	      interstitial.show();
+	    }
+	  }
+	  
 	@Override
 	protected void onResume() {
 		init();
+		displayInterstitial();
 		super.onResume();
 	}
+
 	private void init() {
 		listItem = new ArrayList<VolItem>();
 		VolListDao mVolListDao = new VolListDao(getApplicationContext());
@@ -88,10 +142,10 @@ public class MainActivity extends DrawerLayoutActivity {
 			int count = 1;
 			String strCount = "01";
 			for (int item : mDrawableItem) {
-				if(count<10)
-					strCount="0"+String.valueOf(count);
+				if (count < 10)
+					strCount = "0" + String.valueOf(count);
 				else
-					strCount=String.valueOf(count);
+					strCount = String.valueOf(count);
 				VolItem volItem = new VolItem();
 				volItem.setmDrawbaleitem(item);
 				volItem.setmId(strCount);
@@ -105,7 +159,7 @@ public class MainActivity extends DrawerLayoutActivity {
 		}
 		listItem = (ArrayList<VolItem>) mVolListDao.selectAll();
 		mVolListDao.close();
-		
+
 		mGvVol = (GridView) findViewById(R.id.gvVol);
 		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 			mGvVol.setNumColumns(5);

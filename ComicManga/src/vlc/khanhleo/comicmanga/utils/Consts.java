@@ -28,6 +28,11 @@ public class Consts {
 	public static final String APPLICATION_PREFERENCES = "comicmanga_preferences";
 	public static final int PREFERENCES_MODE = Context.MODE_PRIVATE;
 	public static final String IS_FIRST_USE = "false";
+	
+	public static final String AD_UNIT_ID="ca-app-pub-5056196661864424/5308176792";
+	public static final String AD_INTERSTITIAL_ID = "ca-app-pub-5056196661864424/6468682396"; 
+	
+	public static final String COUNT_TO_SHOW_AD = "count";
 
 	public static String getSdCardPath() {
 		return Environment.getExternalStorageDirectory().getAbsolutePath()
@@ -98,4 +103,27 @@ public class Consts {
 
 		editor.commit();
 	}
+	
+	// get, set for count to show admob
+		public static int getCountAd(final Context context) {
+			SharedPreferences prefs = context.getSharedPreferences(
+					APPLICATION_PREFERENCES,
+					PREFERENCES_MODE);
+
+			int value = prefs.getInt(
+					COUNT_TO_SHOW_AD, 0);
+
+			return value;
+		}
+
+		public static void setCountAd(final Context context, final int value) {
+			SharedPreferences prefs = context.getSharedPreferences(
+					APPLICATION_PREFERENCES,
+					PREFERENCES_MODE);
+			Editor editor = prefs.edit();
+
+			editor.putInt(COUNT_TO_SHOW_AD, value);
+
+			editor.commit();
+		}
 }
