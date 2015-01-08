@@ -359,33 +359,36 @@ public class FragmentPagerActivity extends FragmentActivity implements
 		public void run() {
 			// mSystemUiHider.hide();
 
-			int mControlsHeight = 0;
-			int mShortAnimTime = 200;
-			if (mControlsHeight == 0) {
-				mControlsHeight = controlsView.getHeight();
-			}
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-				// If the ViewPropertyAnimator API is available
-				// (Honeycomb MR2 and later), use it to animate the
-				// in-layout UI controls at the bottom of the
-				// screen.
-
-				controlsView.animate()
-						.translationY(mVisible ? 0 : mControlsHeight)
-						.setDuration(mShortAnimTime);
-				// controlsView.setVisibility(visible ? View.VISIBLE
-				// : View.GONE);
-			} else {
-				// If the ViewPropertyAnimator APIs aren't
-				// available, simply show or hide the in-layout UI
-				// controls.
-				controlsView.setVisibility(mVisible ? View.VISIBLE : View.GONE);
-			}
-			mVisible = !mVisible;
+			hidenShowMenu();
 			// controlsView.setVisibility(View.GONE);
 		}
 	};
 
+	private static void hidenShowMenu(){
+		int mControlsHeight = 0;
+		int mShortAnimTime = 200;
+		if (mControlsHeight == 0) {
+			mControlsHeight = controlsView.getHeight();
+		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+			// If the ViewPropertyAnimator API is available
+			// (Honeycomb MR2 and later), use it to animate the
+			// in-layout UI controls at the bottom of the
+			// screen.
+
+			controlsView.animate()
+					.translationY(mVisible ? 0 : mControlsHeight)
+					.setDuration(mShortAnimTime);
+			// controlsView.setVisibility(visible ? View.VISIBLE
+			// : View.GONE);
+		} else {
+			// If the ViewPropertyAnimator APIs aren't
+			// available, simply show or hide the in-layout UI
+			// controls.
+			controlsView.setVisibility(mVisible ? View.VISIBLE : View.GONE);
+		}
+		mVisible = !mVisible;
+	}
 	/**
 	 * Schedules a call to hide() in [delay] milliseconds, canceling any
 	 * previously scheduled calls.
@@ -570,43 +573,43 @@ public class FragmentPagerActivity extends FragmentActivity implements
 				else if (clickCount == 2) {
 					long duration = System.currentTimeMillis() - startTime;
 					if (duration <= ONE_SECOND) {
-						int mControlsHeight = 0;
-						int mShortAnimTime = 0;
-						if (mControlsHeight == 0) {
-							mControlsHeight = controlsView.getHeight();
-						}
-						if (mShortAnimTime == 0) {
-							mShortAnimTime = getResources().getInteger(
-									android.R.integer.config_shortAnimTime);
-						}
-						// boolean visible = false;
-						// if (controlsView.getVisibility() == View.VISIBLE)
-						// visible = false;
-						// else
-						// visible = true;
-						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-							// If the ViewPropertyAnimator API is available
-							// (Honeycomb MR2 and later), use it to animate the
-							// in-layout UI controls at the bottom of the
-							// screen.
-
-							controlsView
-									.animate()
-									.translationY(
-											mVisible ? 0 : mControlsHeight)
-									.setDuration(mShortAnimTime);
-							// controlsView.setVisibility(visible ? View.VISIBLE
-							// : View.GONE);
-							mVisible = !mVisible;
-						} else {
-							// If the ViewPropertyAnimator APIs aren't
-							// available, simply show or hide the in-layout UI
-							// controls.
-							controlsView.setVisibility(mVisible ? View.VISIBLE
-									: View.GONE);
-							mVisible = !mVisible;
-						}
-
+//						int mControlsHeight = 0;
+//						int mShortAnimTime = 0;
+//						if (mControlsHeight == 0) {
+//							mControlsHeight = controlsView.getHeight();
+//						}
+//						if (mShortAnimTime == 0) {
+//							mShortAnimTime = getResources().getInteger(
+//									android.R.integer.config_shortAnimTime);
+//						}
+//						// boolean visible = false;
+//						// if (controlsView.getVisibility() == View.VISIBLE)
+//						// visible = false;
+//						// else
+//						// visible = true;
+//						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+//							// If the ViewPropertyAnimator API is available
+//							// (Honeycomb MR2 and later), use it to animate the
+//							// in-layout UI controls at the bottom of the
+//							// screen.
+//
+//							controlsView
+//									.animate()
+//									.translationY(
+//											mVisible ? 0 : mControlsHeight)
+//									.setDuration(mShortAnimTime);
+//							// controlsView.setVisibility(visible ? View.VISIBLE
+//							// : View.GONE);
+//							mVisible = !mVisible;
+//						} else {
+//							// If the ViewPropertyAnimator APIs aren't
+//							// available, simply show or hide the in-layout UI
+//							// controls.
+//							controlsView.setVisibility(mVisible ? View.VISIBLE
+//									: View.GONE);
+//							mVisible = !mVisible;
+//						}
+						hidenShowMenu();
 						if (!mVisible && AUTO_HIDE) {
 							// Schedule a hide().
 							delayedHide(AUTO_HIDE_DELAY_MILLIS);
@@ -741,5 +744,12 @@ public class FragmentPagerActivity extends FragmentActivity implements
 			Log.d("Touch Events ---------", sb.toString());
 		}
 
+	}
+	@Override
+	public void onBackPressed() {
+		if (mVisible && AUTO_HIDE) {
+			mVisible= !mVisible;
+		}
+		finish();
 	}
 }

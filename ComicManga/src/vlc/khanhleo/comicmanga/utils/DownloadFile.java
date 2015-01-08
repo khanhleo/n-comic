@@ -190,7 +190,7 @@ public class DownloadFile extends AsyncTask<DownloadItem, String, DownloadItem> 
 			t1.start();
 		} else {
 			Toast.makeText(caller, "fail", Toast.LENGTH_SHORT).show();
-			caller.downloadFinish(mPosition, mDownload);
+			caller.downloadFinish(mPosition, mDownload,false);
 		}
 	}
 
@@ -199,15 +199,17 @@ public class DownloadFile extends AsyncTask<DownloadItem, String, DownloadItem> 
 		((Activity) context).runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				caller.downloadFinish(mPosition, mDownload);
 				if (isGood) {
+					caller.downloadFinish(mPosition, mDownload,true);
 					// if has unzip success, delete file .zip
 					File file = new File(mFileToDel);
 					file.delete();
 					Toast.makeText(context, "done", Toast.LENGTH_LONG).show();
-				} else
+				} else{
+					caller.downloadFinish(mPosition, mDownload,false);
 					Toast.makeText(context, "unZip fail!", Toast.LENGTH_LONG)
 							.show();
+				}
 			}
 		});
 	}

@@ -105,7 +105,6 @@ public abstract class DrawerLayoutActivity extends Activity {
 
 		mActionBar = createActionBarHelper();
 		mActionBar.init();
-
 		// ActionBarDrawerToggle provides convenient helpers for tying together
 		// the
 		// prescribed interactions between a top-level sliding drawer and the
@@ -180,11 +179,13 @@ public abstract class DrawerLayoutActivity extends Activity {
 						itemColor.setBackgroundResource(R.color.light_dark);
 						if (itemText.getText().toString()
 								.equals(getString(R.string.help))) {
-
+							Intent i = new Intent();
+							i.setClass(getBaseContext(), HelpActivity.class);
+							 startActivity(i);
 							mDrawerLayout.closeDrawer(mDrawer);
 						} else if (itemText.getText().toString()
 								.equals(getString(R.string.update))) {
-							
+
 							getVolCount();
 							mDrawerLayout.closeDrawer(mDrawer);
 						} else if (itemText.getText().toString()
@@ -250,18 +251,18 @@ public abstract class DrawerLayoutActivity extends Activity {
 	}
 
 	abstract void appInfor();
+
 	abstract void getVolCount();
-	
+
 	protected void setupView() {
 		listMenu = new ArrayList<String>();
 		listMenu.add(getString(R.string.help));
-		listMenu.add(getString(R.string.update));
+		// listMenu.add(getString(R.string.update));
 		listMenu.add(getString(R.string.about));
 		listMenu.add(getString(R.string.rate_app));
 		listMenu.add(getString(R.string.share_app));
 	}
-	
-	
+
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
@@ -392,8 +393,8 @@ public abstract class DrawerLayoutActivity extends Activity {
 			mActionBar.setHomeButtonEnabled(true);
 			mTitle = mDrawerTitle = mStrTitle;
 			mActionBar.setTitle(mTitle);
-			// mActionBar.setBackgroundDrawable(getResources().getDrawable(
-			// R.drawable.orange));
+			mActionBar.setBackgroundDrawable(getResources().getDrawable(
+					R.color.green));
 		}
 
 		/**

@@ -42,12 +42,13 @@ public class MainActivity extends DrawerLayoutActivity {
 	/** The view to show the ad. */
 	private AdView adView;
 	private InterstitialAd interstitial;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// setContentView(R.layout.activity_main);
 		init();
+		interstitial = new InterstitialAd(this);
 		if (Consts.isNetworkOnline(getApplicationContext())) {
 
 			// Create an ad.
@@ -67,67 +68,37 @@ public class MainActivity extends DrawerLayoutActivity {
 
 			// Start loading the ad in the background.
 			adView.loadAd(adRequest);
-			
+
 			// count to show Interstitial ad
 			int count = Consts.getCountAd(getApplicationContext());
-			interstitial = new InterstitialAd(this);
-			if(count>5){
-				 // Create the interstitial.
-			    interstitial.setAdUnitId(Consts.AD_INTERSTITIAL_ID);
-
-			    // Begin loading your interstitial.
-			    interstitial.loadAd(adRequest);
-			    Consts.setCountAd(getApplicationContext(), 0);
-			}else{
-				Consts.setCountAd(getApplicationContext(), count+1);
-			}
 			
+			if (count > 2) {
+				// Create the interstitial.
+				interstitial.setAdUnitId(Consts.AD_INTERSTITIAL_ID);
+
+				// Begin loading your interstitial.
+				interstitial.loadAd(adRequest);
+				Consts.setCountAd(getApplicationContext(), 0);
+			} else {
+				Consts.setCountAd(getApplicationContext(), count + 1);
+			}
+
 		} else {
 			LinearLayout layout = (LinearLayout) findViewById(R.id.llBottom);
 			layout.setVisibility(View.GONE);
 		}
-		// mGvVol = (GridView) findViewById(R.id.gvVol);
-		// if (getResources().getConfiguration().orientation ==
-		// Configuration.ORIENTATION_LANDSCAPE) {
-		// mGvVol.setNumColumns(5);
-		// } else {
-		// mGvVol.setNumColumns(3);
-		// }
-		// VolAdapter va = new VolAdapter(getApplicationContext(), listItem);
-		// mGvVol.setAdapter(va);
-		// // mGvVol.setAdapter(new VolAdapter(this));
-		// mGvVol.setOnItemClickListener(new OnItemClickListener() {
-		// public void onItemClick(AdapterView<?> parent, View v,
-		// int position, long id) {
-		// String mVol = "";
-		// if (position < 10) {
-		// mVol = "vol0" + String.valueOf(position + 1);
-		// } else {
-		// mVol = "vol" + String.valueOf(position + 1);
-		// }
-		// Bundle bundle = new Bundle();
-		// bundle.putString(Consts.VOL, mVol);
-		// // After all data has been entered and calculated, go to new
-		// // page for results
-		// Intent myIntent = new Intent();
-		// myIntent.putExtras(bundle);
-		// myIntent.setClass(getBaseContext(), ChapActivity.class);
-		// startActivity(myIntent);
-		//
-		// }
-		// });
-
-		// GridView gridview = (GridView) findViewById(R.id.gvVol);
-		// gridview.setAdapter(new TestAdapter(this));
 	}
 
-	// Invoke displayInterstitial() when you are ready to display an interstitial.
-	  public void displayInterstitial() {
-	    if (interstitial.isLoaded()) {
-	      interstitial.show();
-	    }
-	  }
-	  
+	// Invoke displayInterstitial() when you are ready to display an
+	// interstitial.
+	public void displayInterstitial() {
+		if (Consts.isNetworkOnline(getApplicationContext())) {
+			if (interstitial.isLoaded()) {
+				interstitial.show();
+			}
+		}
+	}
+
 	@Override
 	protected void onResume() {
 		init();

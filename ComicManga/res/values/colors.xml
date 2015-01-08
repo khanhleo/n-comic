@@ -17,7 +17,7 @@
 <resources>
     <drawable name="red">#7f00</drawable>
     <drawable name="blue">#770000ff</drawable>
-    <drawable name="green">#7700ff00</drawable>
+    <drawable name="green">#339533</drawable>
     <drawable name="yellow">#77ffff00</drawable>
     <drawable name="orange">#FFBF00</drawable>
     <color name="color1">#ff0f9d58</color>
@@ -27,7 +27,7 @@
     <color name="light_dark">#575252</color>
     <color name="dark">#393636</color>
     <color name="white">#ffffff</color>
-    <color name="green">#25369c</color>
+    <color name="green">#215F21</color>
     <color name="light_green">#48a6e8</color>
     <color name="grown">#6e3e17</color>
     <color name="light_gray">#e5e2e3</color>

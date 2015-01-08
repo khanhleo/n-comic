@@ -36,7 +36,7 @@ import android.widget.Toast;
 public class ChapActivity extends DrawerLayoutActivity {
 
 	private ArrayList<Integer> mListChaps = new ArrayList<Integer>();
-	private String[] mArrayChaps = new String[] { "1", "2", "3" };
+	private String[] mArrayChaps = new String[] { "1", "2" };
 	private boolean[] isDownloading = new boolean[] { false, false, false };
 	private boolean[] isHasDownloaded = new boolean[] { false, false, false };
 	private HandleApi[] atChekDownload = new HandleApi[3];
@@ -48,7 +48,7 @@ public class ChapActivity extends DrawerLayoutActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		listView = (ListView) findViewById(R.id.lv_chap);
 
 		// adapter = new SummaryAdapter(this);
@@ -75,7 +75,7 @@ public class ChapActivity extends DrawerLayoutActivity {
 			mVol = extras.getString(Consts.VOL);
 			strVol = mVol.substring(3);
 		}
-		
+
 		mStrTitle = getString(R.string.vol_number, strVol);
 		super.setupView();
 	}
@@ -93,7 +93,7 @@ public class ChapActivity extends DrawerLayoutActivity {
 	private void checkAPI(String url, ProgressBar mPr, TextView mTv,
 			int mPosition, LinearLayout mDownload, ProgressBar mPrCheckApi) {
 		HandleApi abc = (HandleApi) new HandleApi(this, mPr, mTv, mPosition,
-				mDownload,mPrCheckApi).execute(url);
+				mDownload, mPrCheckApi).execute(url);
 		atChekDownload[mPosition] = abc;
 	}
 
@@ -106,8 +106,8 @@ public class ChapActivity extends DrawerLayoutActivity {
 				result.setmFolderName(mVol + "/" + mChap);
 				mDownload.setVisibility(View.VISIBLE);
 				downloadFile(positon, mPr, mTv, result, mDownload);
-				Toast.makeText(this, result.getmUrl(), Toast.LENGTH_LONG)
-						.show();
+				// Toast.makeText(this, result.getmUrl(), Toast.LENGTH_LONG)
+				// .show();
 				Log.d("url", result.getmUrl());
 				Log.d("folder_name", result.getmFolderName());
 				Log.d("file_name", result.getmFileName());
@@ -131,15 +131,18 @@ public class ChapActivity extends DrawerLayoutActivity {
 	}
 
 	// call back when download finish
-	public void downloadFinish(int mPosition, LinearLayout mDownload) {
+	public void downloadFinish(int mPosition, LinearLayout mDownload,
+			boolean isGood) {
 		isDownloading[mPosition] = false;
 		mDownload.setVisibility(View.GONE);
-		
+
 		// save to data base that have download
-		String strVol = mVol.substring(3);
-		VolListDao mVolListDao = new VolListDao(getApplicationContext());
-		mVolListDao.updateRowIsDownload("true", strVol);
-		mVolListDao.close();
+		if (isGood) {
+			String strVol = mVol.substring(3);
+			VolListDao mVolListDao = new VolListDao(getApplicationContext());
+			mVolListDao.updateRowIsDownload("true", strVol);
+			mVolListDao.close();
+		}
 	}
 
 	@SuppressLint("ViewHolder")
@@ -184,7 +187,8 @@ public class ChapActivity extends DrawerLayoutActivity {
 				break;
 			}
 
-			final ProgressBar prCheckApi = (ProgressBar) v.findViewById(R.id.list_progress_check_api_item);
+			final ProgressBar prCheckApi = (ProgressBar) v
+					.findViewById(R.id.list_progress_check_api_item);
 			final LinearLayout llDownload = (LinearLayout) v
 					.findViewById(R.id.list_ll_download);
 			final ProgressBar pr = (ProgressBar) v
@@ -219,13 +223,14 @@ public class ChapActivity extends DrawerLayoutActivity {
 							listExtras.add(mVol);
 							listExtras.add(mChap);
 							listExtras.add(String.valueOf(mNumberItem));
-							
+
 							// save to data base that have read
 							String strVol = mVol.substring(3);
-							VolListDao mVolListDao = new VolListDao(getApplicationContext());
+							VolListDao mVolListDao = new VolListDao(
+									getApplicationContext());
 							mVolListDao.updateRowIsNew("true", strVol);
 							mVolListDao.close();
-							
+
 							Bundle bundle = new Bundle();
 							// bundle.putString(Consts.VOL,
 							// mVol);
@@ -241,7 +246,7 @@ public class ChapActivity extends DrawerLayoutActivity {
 							myIntent.setClass(getBaseContext(),
 									FragmentPagerActivity.class);
 							startActivity(myIntent);
-							
+
 							return true;
 						} else {
 							if (isDownloading[ps]) {
@@ -256,7 +261,7 @@ public class ChapActivity extends DrawerLayoutActivity {
 									String name = mVol + "_" + mChap;
 									url_check_api += name;
 									checkAPI(url_check_api, pr, tv, ps,
-											llDownload,prCheckApi);
+											llDownload, prCheckApi);
 								} else {
 									Toast.makeText(
 											getApplicationContext(),
@@ -283,7 +288,7 @@ public class ChapActivity extends DrawerLayoutActivity {
 							&& atDownloadFile[ps].getStatus().equals(
 									AsyncTask.Status.RUNNING)) {
 						atDownloadFile[ps].cancel(true);
-						isDownloading[ps]=false;
+						isDownloading[ps] = false;
 						llDownload.setVisibility(View.GONE);
 					}
 				}
@@ -319,7 +324,7 @@ public class ChapActivity extends DrawerLayoutActivity {
 		}
 		if (flag) {
 			new AlertDialog.Builder(this)
-					.setMessage(R.string.cancel_all_thread) 
+					.setMessage(R.string.cancel_all_thread)
 					.setPositiveButton("OK",
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
@@ -338,7 +343,7 @@ public class ChapActivity extends DrawerLayoutActivity {
 											atDownloadFile[i].cancel(true);
 										}
 									}
-									
+
 									dialog.cancel();
 									finish();
 								}
@@ -352,11 +357,10 @@ public class ChapActivity extends DrawerLayoutActivity {
 									dialog.cancel();
 								}
 							}).show();
-		}else{
+		} else {
 			finish();
 		}
 
-		
 	}
 
 }
