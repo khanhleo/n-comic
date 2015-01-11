@@ -47,7 +47,7 @@
         </activity>
         <activity android:name="vlc.khanhleo.comicmanga.ChapActivity" android:screenOrientation="portrait">
         </activity>
-         <activity android:name="vlc.khanhleo.comicmanga.HelpActivity" >
+         <activity android:name="vlc.khanhleo.comicmanga.HelpActivity" android:windowSoftInputMode="adjustResize" >
         </activity>
          <activity
             android:name="com.google.android.gms.ads.AdActivity"

@@ -2,10 +2,10 @@ package vlc.khanhleo.comicmanga;
 
 import vlc.khanhle.comicmanga.R;
 import vlc.khanhleo.comicmanga.utils.Consts;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -16,7 +16,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
-public class HelpActivity extends Activity {
+public class HelpActivity extends FragmentActivity {
 	private static final int PAGE_NUM = 5;
 
 	private int[] drawables = new int[] { R.drawable.screen_shot_1,
@@ -25,6 +25,7 @@ public class HelpActivity extends Activity {
 
 	private ViewPager viewPager;
 	private ImageView btnLeft, btnRight;
+//	private Button btnSkip;
 	private int currentPageIndex;
 
 	@Override
@@ -39,6 +40,7 @@ public class HelpActivity extends Activity {
 		viewPager = (ViewPager) findViewById(R.id.viewpager);
 		btnLeft = (ImageView) findViewById(R.id.btnLeft);
 		btnRight = (ImageView) findViewById(R.id.btnRight);
+//		btnSkip = (Button) findViewById(R.id.btnSkip);
 		OnBoardingPagerAdapter adapter = new OnBoardingPagerAdapter(this);
 		viewPager.setAdapter(adapter);
 
@@ -90,19 +92,20 @@ public class HelpActivity extends Activity {
 	public void onClickSkip(View v) {
 		if (Consts.getIsFirstUse(getApplication())) {
 			Intent i = new Intent(this, MainActivity.class);
-			startActivityForResult(i, 1);
+			startActivity(i);
+			finish();
 		}else{
 			finish();
 		}
 	}
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-
-		setResult(10);
-		finish();
-	}
+//	@Override
+//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//		super.onActivityResult(requestCode, resultCode, data);
+//
+//		setResult(10);
+//		finish();
+//	}
 
 	private class OnBoardingPagerAdapter extends PagerAdapter {
 		private Context mContext;

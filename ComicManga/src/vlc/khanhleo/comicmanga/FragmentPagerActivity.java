@@ -18,6 +18,9 @@ package vlc.khanhleo.comicmanga;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -30,6 +33,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PointF;
@@ -100,7 +104,7 @@ public class FragmentPagerActivity extends FragmentActivity implements
 	public static SystemUiHider mSystemUiHider;
 
 	private static boolean mVisible = false;
-	
+
 	/** The view to show the ad. */
 	private AdView adView;
 
@@ -117,7 +121,7 @@ public class FragmentPagerActivity extends FragmentActivity implements
 			mListDataResult = extras.getStringArrayList(Consts.NUMBER_ITEM);
 			mVol = mListDataResult.get(0);
 			mChap = mListDataResult.get(1);
-			mNumberItem = Integer.parseInt(mListDataResult.get(2));
+			 mNumberItem = Integer.parseInt(mListDataResult.get(2));
 			mListFilePath = getPathIamgeByList(mVol, mChap);
 		}
 
@@ -180,11 +184,11 @@ public class FragmentPagerActivity extends FragmentActivity implements
 
 			}
 		});
-		
+
 		setupAdmob();
 	}
-	
-	private void setupAdmob(){
+
+	private void setupAdmob() {
 		if (Consts.isNetworkOnline(getApplicationContext())) {
 
 			// Create an ad.
@@ -210,22 +214,83 @@ public class FragmentPagerActivity extends FragmentActivity implements
 		}
 	}
 
-	// get list file path
-	private ArrayList<String> getPathIamgeByList(String mVol, String mChap){
-		File dir = new File(Consts.getSdCardPath() + mVol + "/"
-				+ mChap);
-		ArrayList<String> list = new ArrayList<String>();
-		if (dir.exists() != false) {
-			if (dir.listFiles().length > 2) {
-				for (File itemFile : dir.listFiles()) {
-					list.add(itemFile.getAbsolutePath());
+	
+	//sort file 
+	private List<String> getDir(String dirPath)
+    {
+		List<String> item = null;
+		 List<String> path = null;
+//    	myPath.setText("Location: " + dirPath);
+    	item = new ArrayList<String>();
+    	path = new ArrayList<String>();
+    	File f = new File(dirPath);
+    	File[] files = f.listFiles();
+    	
+//    	if(!dirPath.equals(root))
+//    	{
+//    		item.add(root);
+//    		path.add(root);
+//    		item.add("../");
+//    		path.add(f.getParent());	
+//    	}
+    	
+    	Arrays.sort(files, filecomparator);
+    	
+    	for(int i=0; i < files.length; i++)
+    	{
+    		File file = files[i];
+    		
+    		if(!file.isHidden() && file.canRead()){
+//    			path.add(file.getPath());
+//        		if(file.isDirectory()){
+//        			item.add(file.getAbsolutePath());
+//        		}else{
+//        			item.add(file.getName());
+//        		}
+    			item.add(file.getAbsolutePath());
+    		}	
+    	}
+    	return item;
+    }
+    
+    Comparator<? super File> filecomparator = new Comparator<File>(){
+		
+		public int compare(File file1, File file2) {
+
+			if(file1.isDirectory()){
+				if (file2.isDirectory()){
+					return String.valueOf(file1.getName().toLowerCase()).compareTo(file2.getName().toLowerCase());
+				}else{
+					return -1;
+				}
+			}else {
+				if (file2.isDirectory()){
+					return 1;
+				}else{
+					return String.valueOf(file1.getName().toLowerCase()).compareTo(file2.getName().toLowerCase());
 				}
 			}
-		}
-		
+				
+		} 	
+	};
+	// get list file path
+	private ArrayList<String> getPathIamgeByList(String mVol, String mChap) {
+//		File dir = new File(Consts.getSdCardPath() + mVol + "/" + mChap);
+		List<String> listResult = getDir(Consts.getSdCardPath() + mVol + "/" + mChap);
+		ArrayList<String> list = new ArrayList<String>();
+		list =(ArrayList<String>) listResult;
+//		int count = 0;
+//		if (dir.exists() != false) {
+//			if (dir.listFiles().length > 2) {
+//				for (File itemFile : dir.listFiles()) {
+//						list.add(itemFile.getAbsolutePath());
+//				}
+//			}
+//		}
+
 		return list;
 	}
-	
+
 	// button on setting panel click
 	@Override
 	public void onClick(View v) {
@@ -252,7 +317,8 @@ public class FragmentPagerActivity extends FragmentActivity implements
 	public void showGoToDialog(final Activity activity) {
 		final Dialog dialog = new Dialog(activity);
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent); 
+		dialog.getWindow().setBackgroundDrawableResource(
+				android.R.color.transparent);
 		dialog.setContentView(R.layout.dialog_go_to);
 		final EditText txtInput = (EditText) dialog
 				.findViewById(R.id.txt_input);
@@ -264,10 +330,11 @@ public class FragmentPagerActivity extends FragmentActivity implements
 				if (!strCheck.equals("")) {
 					int number = Integer
 							.parseInt(txtInput.getText().toString());
-					getNumberIndex(number);
+					 getNumberIndex(number);
 					dialog.dismiss();
-				}else{
-					Toast.makeText(getApplicationContext(), activity.getString(R.string.warning_string_empty),
+				} else {
+					Toast.makeText(getApplicationContext(),
+							activity.getString(R.string.warning_string_empty),
 							Toast.LENGTH_LONG).show();
 				}
 			}
@@ -283,46 +350,47 @@ public class FragmentPagerActivity extends FragmentActivity implements
 
 		final Dialog dialog = new Dialog(activity);
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent); 
+		dialog.getWindow().setBackgroundDrawableResource(
+				android.R.color.transparent);
 		dialog.setContentView(R.layout.dialog_brightness);
 		final SeekBar sbBrightness = (SeekBar) dialog
 				.findViewById(R.id.sb_brightness);
 		sbBrightness.setMax(255);
 
-		   float curBrightnessValue = 0;
-		  try {
-		   curBrightnessValue = android.provider.Settings.System.getInt(
-		     getContentResolver(),
-		     android.provider.Settings.System.SCREEN_BRIGHTNESS);
-		  } catch (SettingNotFoundException e) {
-		   e.printStackTrace();
-		  }
+		float curBrightnessValue = 0;
+		try {
+			curBrightnessValue = android.provider.Settings.System.getInt(
+					getContentResolver(),
+					android.provider.Settings.System.SCREEN_BRIGHTNESS);
+		} catch (SettingNotFoundException e) {
+			e.printStackTrace();
+		}
 
-		   int screen_brightness = (int) curBrightnessValue;
-		   sbBrightness.setProgress(screen_brightness);
-		  sbBrightness.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-		   int progress = 0;
+		int screen_brightness = (int) curBrightnessValue;
+		sbBrightness.setProgress(screen_brightness);
+		sbBrightness.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			int progress = 0;
 
-		    @Override
-		   public void onProgressChanged(SeekBar seekBar, int progresValue,
-		     boolean fromUser) {
-		    progress = progresValue;
-		   }
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progresValue,
+					boolean fromUser) {
+				progress = progresValue;
+			}
 
-		    @Override
-		   public void onStartTrackingTouch(SeekBar seekBar) {
-		    // Do something here,
-		    // if you want to do anything at the start of
-		    // touching the seekbar
-		   }
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				// Do something here,
+				// if you want to do anything at the start of
+				// touching the seekbar
+			}
 
-		    @Override
-		   public void onStopTrackingTouch(SeekBar seekBar) {
-		    android.provider.Settings.System.putInt(getContentResolver(),
-		      android.provider.Settings.System.SCREEN_BRIGHTNESS,
-		      progress);
-		   }
-		  });
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				android.provider.Settings.System.putInt(getContentResolver(),
+						android.provider.Settings.System.SCREEN_BRIGHTNESS,
+						progress);
+			}
+		});
 		Button dialogButton = (Button) dialog.findViewById(R.id.btn_ok);
 		dialogButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -335,12 +403,12 @@ public class FragmentPagerActivity extends FragmentActivity implements
 		dialog.show();
 
 	}
-	
+
 	// result data
 	public void getNumberIndex(int number) {
-//		Toast.makeText(getApplicationContext(), String.valueOf(number),
-//				Toast.LENGTH_SHORT).show();
-		 mPager.setCurrentItem(number);
+		// Toast.makeText(getApplicationContext(), String.valueOf(number),
+		// Toast.LENGTH_SHORT).show();
+		mPager.setCurrentItem(number);
 	}
 
 	@Override
@@ -364,7 +432,7 @@ public class FragmentPagerActivity extends FragmentActivity implements
 		}
 	};
 
-	private static void hidenShowMenu(){
+	private static void hidenShowMenu() {
 		int mControlsHeight = 0;
 		int mShortAnimTime = 200;
 		if (mControlsHeight == 0) {
@@ -376,8 +444,7 @@ public class FragmentPagerActivity extends FragmentActivity implements
 			// in-layout UI controls at the bottom of the
 			// screen.
 
-			controlsView.animate()
-					.translationY(mVisible ? 0 : mControlsHeight)
+			controlsView.animate().translationY(mVisible ? 0 : mControlsHeight)
 					.setDuration(mShortAnimTime);
 			// controlsView.setVisibility(visible ? View.VISIBLE
 			// : View.GONE);
@@ -389,6 +456,7 @@ public class FragmentPagerActivity extends FragmentActivity implements
 		}
 		mVisible = !mVisible;
 	}
+
 	/**
 	 * Schedules a call to hide() in [delay] milliseconds, canceling any
 	 * previously scheduled calls.
@@ -410,7 +478,8 @@ public class FragmentPagerActivity extends FragmentActivity implements
 
 		@Override
 		public Fragment getItem(int position) {
-			return ArrayListFragment.newInstance(position, mVol, mChap, mListFilePath);
+			return ArrayListFragment.newInstance(position, mVol, mChap,
+					mListFilePath);
 		}
 	}
 
@@ -425,7 +494,8 @@ public class FragmentPagerActivity extends FragmentActivity implements
 		 * Create a new instance of CountingFragment, providing "num" as an
 		 * argument.
 		 */
-		static ArrayListFragment newInstance(int mNum, String mVol, String mChap, ArrayList<String> mListFilePath) {
+		static ArrayListFragment newInstance(int mNum, String mVol,
+				String mChap, ArrayList<String> mListFilePath) {
 			ArrayListFragment f = new ArrayListFragment();
 
 			// Supply num input as an argument.
@@ -450,7 +520,8 @@ public class FragmentPagerActivity extends FragmentActivity implements
 					: "vol01";
 			mChap = getArguments() != null ? getArguments().getString("chap")
 					: "chap1";
-			mFilePath = getArguments()!=null? getArguments().getStringArrayList("file_path"):null;
+			mFilePath = getArguments() != null ? getArguments()
+					.getStringArrayList("file_path") : null;
 		}
 
 		/**
@@ -463,9 +534,23 @@ public class FragmentPagerActivity extends FragmentActivity implements
 			View v = inflater.inflate(R.layout.fragment_pager_list, container,
 					false);
 			View tv = v.findViewById(R.id.ivContent);
-//			Bitmap bmp = BitmapFactory.decodeFile(getPathImage(mNum));
-			Bitmap bmp = BitmapFactory.decodeFile(mFilePath.get(mNum));
-			((ImageView) tv).setImageBitmap(bmp);
+			// Bitmap bmp = BitmapFactory.decodeFile(getPathImage(mNum));
+			
+			Bitmap bmp= null;
+			BitmapFactory.Options options = new BitmapFactory.Options();
+			options.inPreferredConfig = Config.RGB_565;
+//			Bitmap bitmap = BitmapFactory.decodeStream(stream, null, options);
+			bmp = BitmapFactory.decodeFile(mFilePath.get(mNum), options);
+//			 if(BitmapFactory.decodeFile(mFilePath.get(mNum))!=null){
+//				bmp  = BitmapFactory.decodeFile(mFilePath.get(mNum));
+//			 }
+				
+			if (bmp != null) {
+				((ImageView) tv).setImageBitmap(bmp);
+			}
+			
+			
+			
 			mMatrixInit = ((ImageView) tv).getImageMatrix();
 			tv.setOnTouchListener((OnTouchListener) this);
 			return v;
@@ -484,8 +569,7 @@ public class FragmentPagerActivity extends FragmentActivity implements
 					+ fileName;
 			return pathName;
 		}
-		
-		
+
 		@Override
 		public void onActivityCreated(Bundle savedInstanceState) {
 			super.onActivityCreated(savedInstanceState);
@@ -573,42 +657,43 @@ public class FragmentPagerActivity extends FragmentActivity implements
 				else if (clickCount == 2) {
 					long duration = System.currentTimeMillis() - startTime;
 					if (duration <= ONE_SECOND) {
-//						int mControlsHeight = 0;
-//						int mShortAnimTime = 0;
-//						if (mControlsHeight == 0) {
-//							mControlsHeight = controlsView.getHeight();
-//						}
-//						if (mShortAnimTime == 0) {
-//							mShortAnimTime = getResources().getInteger(
-//									android.R.integer.config_shortAnimTime);
-//						}
-//						// boolean visible = false;
-//						// if (controlsView.getVisibility() == View.VISIBLE)
-//						// visible = false;
-//						// else
-//						// visible = true;
-//						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-//							// If the ViewPropertyAnimator API is available
-//							// (Honeycomb MR2 and later), use it to animate the
-//							// in-layout UI controls at the bottom of the
-//							// screen.
-//
-//							controlsView
-//									.animate()
-//									.translationY(
-//											mVisible ? 0 : mControlsHeight)
-//									.setDuration(mShortAnimTime);
-//							// controlsView.setVisibility(visible ? View.VISIBLE
-//							// : View.GONE);
-//							mVisible = !mVisible;
-//						} else {
-//							// If the ViewPropertyAnimator APIs aren't
-//							// available, simply show or hide the in-layout UI
-//							// controls.
-//							controlsView.setVisibility(mVisible ? View.VISIBLE
-//									: View.GONE);
-//							mVisible = !mVisible;
-//						}
+						// int mControlsHeight = 0;
+						// int mShortAnimTime = 0;
+						// if (mControlsHeight == 0) {
+						// mControlsHeight = controlsView.getHeight();
+						// }
+						// if (mShortAnimTime == 0) {
+						// mShortAnimTime = getResources().getInteger(
+						// android.R.integer.config_shortAnimTime);
+						// }
+						// // boolean visible = false;
+						// // if (controlsView.getVisibility() == View.VISIBLE)
+						// // visible = false;
+						// // else
+						// // visible = true;
+						// if (Build.VERSION.SDK_INT >=
+						// Build.VERSION_CODES.HONEYCOMB_MR2) {
+						// // If the ViewPropertyAnimator API is available
+						// // (Honeycomb MR2 and later), use it to animate the
+						// // in-layout UI controls at the bottom of the
+						// // screen.
+						//
+						// controlsView
+						// .animate()
+						// .translationY(
+						// mVisible ? 0 : mControlsHeight)
+						// .setDuration(mShortAnimTime);
+						// // controlsView.setVisibility(visible ? View.VISIBLE
+						// // : View.GONE);
+						// mVisible = !mVisible;
+						// } else {
+						// // If the ViewPropertyAnimator APIs aren't
+						// // available, simply show or hide the in-layout UI
+						// // controls.
+						// controlsView.setVisibility(mVisible ? View.VISIBLE
+						// : View.GONE);
+						// mVisible = !mVisible;
+						// }
 						hidenShowMenu();
 						if (!mVisible && AUTO_HIDE) {
 							// Schedule a hide().
@@ -745,10 +830,11 @@ public class FragmentPagerActivity extends FragmentActivity implements
 		}
 
 	}
+
 	@Override
 	public void onBackPressed() {
 		if (mVisible && AUTO_HIDE) {
-			mVisible= !mVisible;
+			mVisible = !mVisible;
 		}
 		finish();
 	}
