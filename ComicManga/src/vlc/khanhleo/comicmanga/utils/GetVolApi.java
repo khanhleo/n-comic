@@ -15,7 +15,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import vlc.khanhle.comicmanga.R;
+import vlc.khanhle.comicsongoku.R;
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;

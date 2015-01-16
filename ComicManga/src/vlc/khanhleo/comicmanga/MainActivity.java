@@ -2,7 +2,7 @@ package vlc.khanhleo.comicmanga;
 
 import java.util.ArrayList;
 
-import vlc.khanhle.comicmanga.R;
+import vlc.khanhle.comicsongoku.R;
 import vlc.khanhleo.comicmanga.adapter.VolAdapter;
 import vlc.khanhleo.comicmanga.data.VolListDao;
 import vlc.khanhleo.comicmanga.object.VolItem;
@@ -144,7 +144,7 @@ public class MainActivity extends DrawerLayoutActivity {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
 				String mVol = "";
-				if (position < 10) {
+				if (position < 9) {
 					mVol = "vol0" + String.valueOf(position + 1);
 				} else {
 					mVol = "vol" + String.valueOf(position + 1);

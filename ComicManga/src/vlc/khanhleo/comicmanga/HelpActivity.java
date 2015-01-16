@@ -1,6 +1,6 @@
 package vlc.khanhleo.comicmanga;
 
-import vlc.khanhle.comicmanga.R;
+import vlc.khanhle.comicsongoku.R;
 import vlc.khanhleo.comicmanga.utils.Consts;
 import android.content.Context;
 import android.content.Intent;

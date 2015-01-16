@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
-import vlc.khanhle.comicmanga.R;
+import vlc.khanhle.comicsongoku.R;
 import vlc.khanhleo.comicmanga.data.VolListDao;
 import vlc.khanhleo.comicmanga.object.DownloadItem;
 import vlc.khanhleo.comicmanga.utils.Consts;

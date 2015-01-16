@@ -26,7 +26,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 
-import vlc.khanhle.comicmanga.R;
+import vlc.khanhle.comicsongoku.R;
 import vlc.khanhleo.comicmanga.menu.SystemUiHider;
 import vlc.khanhleo.comicmanga.utils.Consts;
 import android.annotation.SuppressLint;
@@ -121,7 +121,7 @@ public class FragmentPagerActivity extends FragmentActivity implements
 			mListDataResult = extras.getStringArrayList(Consts.NUMBER_ITEM);
 			mVol = mListDataResult.get(0);
 			mChap = mListDataResult.get(1);
-			 mNumberItem = Integer.parseInt(mListDataResult.get(2));
+			mNumberItem = Integer.parseInt(mListDataResult.get(2));
 			mListFilePath = getPathIamgeByList(mVol, mChap);
 		}
 
@@ -214,79 +214,80 @@ public class FragmentPagerActivity extends FragmentActivity implements
 		}
 	}
 
-	
-	//sort file 
-	private List<String> getDir(String dirPath)
-    {
+	// sort file
+	private List<String> getDir(String dirPath) {
 		List<String> item = null;
-		 List<String> path = null;
-//    	myPath.setText("Location: " + dirPath);
-    	item = new ArrayList<String>();
-    	path = new ArrayList<String>();
-    	File f = new File(dirPath);
-    	File[] files = f.listFiles();
-    	
-//    	if(!dirPath.equals(root))
-//    	{
-//    		item.add(root);
-//    		path.add(root);
-//    		item.add("../");
-//    		path.add(f.getParent());	
-//    	}
-    	
-    	Arrays.sort(files, filecomparator);
-    	
-    	for(int i=0; i < files.length; i++)
-    	{
-    		File file = files[i];
-    		
-    		if(!file.isHidden() && file.canRead()){
-//    			path.add(file.getPath());
-//        		if(file.isDirectory()){
-//        			item.add(file.getAbsolutePath());
-//        		}else{
-//        			item.add(file.getName());
-//        		}
-    			item.add(file.getAbsolutePath());
-    		}	
-    	}
-    	return item;
-    }
-    
-    Comparator<? super File> filecomparator = new Comparator<File>(){
-		
+		List<String> path = null;
+		// myPath.setText("Location: " + dirPath);
+		item = new ArrayList<String>();
+		path = new ArrayList<String>();
+		File f = new File(dirPath);
+		File[] files = f.listFiles();
+
+		// if(!dirPath.equals(root))
+		// {
+		// item.add(root);
+		// path.add(root);
+		// item.add("../");
+		// path.add(f.getParent());
+		// }
+
+		Arrays.sort(files, filecomparator);
+
+		for (int i = 0; i < files.length; i++) {
+			File file = files[i];
+
+			if (!file.isHidden() && file.canRead()) {
+				// path.add(file.getPath());
+				// if(file.isDirectory()){
+				// item.add(file.getAbsolutePath());
+				// }else{
+				// item.add(file.getName());
+				// }
+				item.add(file.getAbsolutePath());
+			}
+		}
+		return item;
+	}
+
+	Comparator<? super File> filecomparator = new Comparator<File>() {
+
 		public int compare(File file1, File file2) {
 
-			if(file1.isDirectory()){
-				if (file2.isDirectory()){
-					return String.valueOf(file1.getName().toLowerCase()).compareTo(file2.getName().toLowerCase());
-				}else{
+			if (file1.isDirectory()) {
+				if (file2.isDirectory()) {
+					return String.valueOf(file1.getName().toLowerCase())
+							.compareTo(file2.getName().toLowerCase());
+				} else {
 					return -1;
 				}
-			}else {
-				if (file2.isDirectory()){
+			} else {
+				if (file2.isDirectory()) {
 					return 1;
-				}else{
-					return String.valueOf(file1.getName().toLowerCase()).compareTo(file2.getName().toLowerCase());
+				} else {
+					return String.valueOf(file1.getName().toLowerCase())
+							.compareTo(file2.getName().toLowerCase());
 				}
 			}
-				
-		} 	
+
+		}
 	};
+
 	// get list file path
 	private ArrayList<String> getPathIamgeByList(String mVol, String mChap) {
-//		File dir = new File(Consts.getSdCardPath() + mVol + "/" + mChap);
-		List<String> listResult = getDir(Consts.getSdCardPath() + mVol + "/" + mChap);
+		// File dir = new File(Consts.getSdCardPath() + mVol + "/" + mChap);
+		List<String> listResult = getDir(Consts.getSdCardPath() + mVol + "/"
+				+ mChap);
 		ArrayList<String> list = new ArrayList<String>();
-		list =(ArrayList<String>) listResult;
-//		int count = 0;
-//		if (dir.exists() != false) {
-//			if (dir.listFiles().length > 2) {
-//				for (File itemFile : dir.listFiles()) {
-//						list.add(itemFile.getAbsolutePath());
-//				}
-//			}
-//		}
+		list = (ArrayList<String>) listResult;
+		// int count = 0;
+		// if (dir.exists() != false) {
+		// if (dir.listFiles().length > 2) {
+		// for (File itemFile : dir.listFiles()) {
+		// list.add(itemFile.getAbsolutePath());
+		// }
+		// }
+		// }
 
 		return list;
 	}
@@ -330,7 +331,7 @@ public class FragmentPagerActivity extends FragmentActivity implements
 				if (!strCheck.equals("")) {
 					int number = Integer
 							.parseInt(txtInput.getText().toString());
-					 getNumberIndex(number);
+					getNumberIndex(number);
 					dialog.dismiss();
 				} else {
 					Toast.makeText(getApplicationContext(),
@@ -524,6 +525,47 @@ public class FragmentPagerActivity extends FragmentActivity implements
 					.getStringArrayList("file_path") : null;
 		}
 
+		// Scaled Down image into Memory
+		public static int calculateInSampleSize(BitmapFactory.Options options,
+				int reqWidth, int reqHeight) {
+			// Raw height and width of image
+			final int height = options.outHeight;
+			final int width = options.outWidth;
+			int inSampleSize = 1;
+
+			if (height > reqHeight || width > reqWidth) {
+
+				final int halfHeight = height / 2;
+				final int halfWidth = width / 2;
+
+				// Calculate the largest inSampleSize value that is a power of 2
+				// and keeps both
+				// height and width larger than the requested height and width.
+				while ((halfHeight / inSampleSize) > reqHeight
+						&& (halfWidth / inSampleSize) > reqWidth) {
+					inSampleSize *= 2;
+				}
+			}
+
+			return inSampleSize;
+		}
+
+		public static Bitmap decodeSampledBitmapFromFile(String pathFile, int reqWidth, int reqHeight) {
+
+			// First decode with inJustDecodeBounds=true to check dimensions
+			final BitmapFactory.Options options = new BitmapFactory.Options();
+			options.inJustDecodeBounds = true;
+			BitmapFactory.decodeFile(pathFile, options);
+
+			// Calculate inSampleSize
+			options.inSampleSize = calculateInSampleSize(options, reqWidth,
+					reqHeight);
+
+			// Decode bitmap with inSampleSize set
+			options.inJustDecodeBounds = false;
+			return BitmapFactory.decodeFile(pathFile, options);
+		}
+
 		/**
 		 * The Fragment's UI is just a simple text view showing its instance
 		 * number.
@@ -535,22 +577,22 @@ public class FragmentPagerActivity extends FragmentActivity implements
 					false);
 			View tv = v.findViewById(R.id.ivContent);
 			// Bitmap bmp = BitmapFactory.decodeFile(getPathImage(mNum));
-			
-			Bitmap bmp= null;
-			BitmapFactory.Options options = new BitmapFactory.Options();
-			options.inPreferredConfig = Config.RGB_565;
-//			Bitmap bitmap = BitmapFactory.decodeStream(stream, null, options);
-			bmp = BitmapFactory.decodeFile(mFilePath.get(mNum), options);
-//			 if(BitmapFactory.decodeFile(mFilePath.get(mNum))!=null){
-//				bmp  = BitmapFactory.decodeFile(mFilePath.get(mNum));
-//			 }
-				
+
+			Bitmap bmp = null;
+//			BitmapFactory.Options options = new BitmapFactory.Options();
+//			options.inPreferredConfig = Config.RGB_565;
+			// Bitmap bitmap = BitmapFactory.decodeStream(stream, null,
+			// options);
+//			bmp = BitmapFactory.decodeFile(mFilePath.get(mNum), options);
+			bmp = decodeSampledBitmapFromFile(mFilePath.get(mNum), 450, 450);
+			// if(BitmapFactory.decodeFile(mFilePath.get(mNum))!=null){
+			// bmp = BitmapFactory.decodeFile(mFilePath.get(mNum));
+			// }
+
 			if (bmp != null) {
 				((ImageView) tv).setImageBitmap(bmp);
 			}
-			
-			
-			
+
 			mMatrixInit = ((ImageView) tv).getImageMatrix();
 			tv.setOnTouchListener((OnTouchListener) this);
 			return v;

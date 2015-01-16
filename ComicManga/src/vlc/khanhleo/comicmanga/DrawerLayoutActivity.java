@@ -19,7 +19,7 @@ package vlc.khanhleo.comicmanga;
 import java.util.ArrayList;
 import java.util.List;
 
-import vlc.khanhle.comicmanga.R;
+import vlc.khanhle.comicsongoku.R;
 import vlc.khanhleo.comicmanga.utils.Consts;
 import vlc.khanhleo.comicmanga.utils.GetVolApi;
 import vlc.khanhleo.comicmanga.utils.HandleApi;

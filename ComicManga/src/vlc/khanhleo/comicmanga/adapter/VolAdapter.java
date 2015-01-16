@@ -2,7 +2,7 @@ package vlc.khanhleo.comicmanga.adapter;
 
 import java.util.ArrayList;
 
-import vlc.khanhle.comicmanga.R;
+import vlc.khanhle.comicsongoku.R;
 import vlc.khanhleo.comicmanga.object.VolItem;
 import android.annotation.SuppressLint;
 import android.content.Context;

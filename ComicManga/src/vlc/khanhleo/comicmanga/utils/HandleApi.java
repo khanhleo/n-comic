@@ -17,7 +17,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import vlc.khanhle.comicmanga.R;
 import vlc.khanhleo.comicmanga.ChapActivity;
 import vlc.khanhleo.comicmanga.object.DownloadItem;
 
